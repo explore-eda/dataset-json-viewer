@@ -10,6 +10,8 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        'custom-beige': '#e0d4cc',
+        'custom-blue': '#0c2470',
       },
     },
   },

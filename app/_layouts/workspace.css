@@ -1,0 +1,80 @@
+.background {
+  background-color: rgba(244, 244, 244, 0.2); /* 50% opacity */
+  background-image:  linear-gradient(rgba(202, 202, 202, 0.2) 4px, transparent 4px), 
+                    linear-gradient(90deg, rgba(202, 202, 202, 0.2) 4px, transparent 4px), 
+                    linear-gradient(rgba(202, 202, 202, 0.2) 2px, transparent 2px), 
+                    linear-gradient(90deg, rgba(202, 202, 202, 0.2) 2px, rgba(244, 244, 244, 0.2) 2px);
+  background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+  background-position: -4px -4px, -4px -4px, -2px -2px, -2px -2px;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 20px;
+}
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+th {
+  background-color: #f2f2f2;
+  cursor: pointer;
+  position: relative;
+}
+th.key-sequence {
+  background-color: #d9edf7;
+}
+th:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: 100%;
+  left: 0;
+  white-space: pre-wrap;
+  background-color: #333;
+  color: #fff;
+  padding: 5px;
+  border-radius: 4px;
+  font-size: 12px;
+  z-index: 10;
+}
+.popup {
+  display: none;
+  position: absolute;
+  top: 100px;
+  left: 100px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  padding: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+}
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.popup-header h3 {
+  margin: 0;
+}
+.popup-header .close-popup {
+  cursor: pointer;
+  font-size: 16px;
+  color: #aaa;
+}
+button {
+  margin: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+.search-icon {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+}
+.hidden {
+  display: none;
+}
