@@ -10,12 +10,12 @@ import {
   CloudArrowDownIcon,
 } from "@heroicons/react/16/solid";
 
-export function FileMenu({ uploadFunction, openFunction, clearFunction, handleDownload }) {
+export function FileMenu({ handleOpenAPIOverlay, handleFileOpen, clearFunction, handleDownload }) {
   const menuButtonRef = useRef(null);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
-    openFunction(file);
+    handleFileOpen(file);
     menuButtonRef.current.click();
     event.target.value = ''; 
   };
@@ -37,7 +37,7 @@ export function FileMenu({ uploadFunction, openFunction, clearFunction, handleDo
         <MenuItem>
           <button
             className="group flex w-32 items-center gap-2 py-1.5 px-3 data-[focus]:bg-black/10"
-            onClick={uploadFunction}
+            onClick={handleOpenAPIOverlay}
           >
             <ArrowRightCircleIcon className="size-4 fill-black/30" />
             API Request

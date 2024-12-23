@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 
-export default function Overlay({ setApiAddress, setShowInputOverlay }) {
+export default function Overlay({ callApi, setShowInputOverlay }) {
     const handleOverlaySave = (newApiAddress) => {
-        setApiAddress(newApiAddress);
+        callApi(newApiAddress);
         setShowInputOverlay(false);
       };
     

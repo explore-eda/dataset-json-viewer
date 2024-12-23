@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 
-export default function AddressBar({ addressBarText, setShowInputOverlay, openFunction }) {
+export default function AddressBar({ addressBarText, handleOpenAPIOverlay, handleFileOpen }) {
   const [selectedOption, setSelectedOption] = useState("");
   const fileInputRef = useRef(null);
 
@@ -12,13 +12,13 @@ export default function AddressBar({ addressBarText, setShowInputOverlay, openFu
   const handleFileChange = (event) => {
     console.log("FileUploadMenuItem: File changed 2", event.target.files[0]);
     const file = event.target.files[0];
-    openFunction(file);
+    handleFileOpen(file);
     event.target.value = ''; 
   };
 
   const handleOptionChange = (event) => {
     if(event.target.value === "1") {
-      setShowInputOverlay(true);
+      handleOpenAPIOverlay();
       setSelectedOption("");
       return
     } else if (event.target.value === "2") {

@@ -4,12 +4,11 @@ import AddressBar from "../_components/addressbar";
 /* e8e0de */
 /* F9D74D */
 export default function Header({
-  uploadFunction,
-  openFunction,
+  handleOpenAPIOverlay,
+  handleFileOpen,
   handleDownload,
   clearFunction,
   addressBarText,
-  setShowInputOverlay,
 }) {
   return (
     <header className="flex bg-custom-beige flex-col w-full text-lg">
@@ -17,8 +16,8 @@ export default function Header({
       <div className="flex flex-row items-baseline mx-auto md:max-w-4xl md:justify-between md:mx-0">
         <div className="sm:flex sm:flex-row sm:gap-2 mb-2 mt-1 md:mx-8">
           <FileMenu
-            uploadFunction={uploadFunction}
-            openFunction={openFunction}
+            handleOpenAPIOverlay={handleOpenAPIOverlay}
+            handleFileOpen={handleFileOpen}
             handleDownload={handleDownload}
             clearFunction={clearFunction}
           />
@@ -31,8 +30,8 @@ export default function Header({
 
       <AddressBar
         addressBarText={addressBarText}
-        setShowInputOverlay={setShowInputOverlay}
-        openFunction={openFunction}
+        handleOpenAPIOverlay={handleOpenAPIOverlay}
+        handleFileOpen={handleFileOpen}
       />
     </header>
   );
