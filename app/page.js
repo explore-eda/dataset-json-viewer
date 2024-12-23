@@ -9,7 +9,7 @@ import "./globals.css";
 import { ToastContainer, toast, Bounce } from "react-toastify";
 
 export default function Home() {
-  const [applicationStatus, setApplicationStatus] = useState("Ready....");
+  const [applicationStatus, setApplicationStatus] = useState("Initializing....");
   const [addressBarText, setAddressBarText] = useState("");
 
   // API Input
@@ -64,7 +64,7 @@ export default function Home() {
         sessionStorage.setItem("apiUrl", url);
       })
       .catch((error) => {
-        setApplicationStatus("Ready.. ");
+        setApplicationStatus("Initializing.. ");
         errorToast(error.message);
         });
   };
@@ -84,13 +84,13 @@ export default function Home() {
         setJson(jsonData);
         setApplicationStatus("Opened File");
       } catch (error) {
-        setApplicationStatus("Ready.. ");
+        setApplicationStatus("Initializing.. ");
         errorToast(error.message);
       }
     };
 
     reader.onerror = (error) => {
-      setApplicationStatus("Ready.. ");
+      setApplicationStatus("Initializing.. ");
       errorToast(error.message);
     };
 
@@ -122,7 +122,7 @@ export default function Home() {
     clearDataFile();
     setJson(null);
     setAddressBarText("");
-    setApplicationStatus("Ready");
+    setApplicationStatus("Initializing....");
   };
 
   const clearApiURL = () => {

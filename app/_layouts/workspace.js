@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./workspace.css";
+import { useRef } from "react";
 
 const WorkSpace = ({ json }) => {
   const [dataset, setDataset] = useState({ columns: [], rows: [] });
@@ -9,6 +10,14 @@ const WorkSpace = ({ json }) => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearch, setShowSearch] = useState(false);
+
+  const tableRef = useRef(null);
+
+  useEffect(() => {
+    if (tableRef.current) {
+      tableRef.current.classList.add("slide-up");
+    }
+  }, [dataset]);
 
   useEffect(() => {
     if (json) {
@@ -77,7 +86,7 @@ const WorkSpace = ({ json }) => {
               className="w-16 ml-2 border-2 border-gray-400 rounded-md"
             />
 
-            <table className="bg-white">
+            <table className="bg-white" ref={tableRef}>
               <thead>
                 <tr>
                   {visibleColumns.map((column, index) => (

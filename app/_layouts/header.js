@@ -16,7 +16,7 @@ export default function Header({
       <div className="flex flex-col items-center justify-center center content-center md:flex-row md:items-baseline mx-auto md:max-w-4xl md:justify-between md:mx-0">
         <div className="flex md:hidden font-bold mt-2">EDA JSON Viewer</div>
 
-        <div className="sm:flex sm:flex-row sm:gap-2 mb-2 md:mt-1 md:mx-8">
+        <div className="flex flex-row gap-2 mb-2 md:mt-1 md:mx-8">
           <FileMenu
             handleOpenAPIOverlay={handleOpenAPIOverlay}
             handleFileOpen={handleFileOpen}
@@ -27,7 +27,7 @@ export default function Header({
           <Window />
           <Help />
         </div>
-        <div className="flex max-md:hidden md:block font-bold ml-2 md:mx-5">EDA JSON Viewer</div>
+        <div className="flex max-md:hidden md:block font-bold ml-2 md:mx-8">EDA JSON Viewer</div>
         </div>
 
       <AddressBar
