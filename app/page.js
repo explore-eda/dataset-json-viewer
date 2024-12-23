@@ -64,7 +64,7 @@ export default function Home() {
         sessionStorage.setItem("apiUrl", url);
       })
       .catch((error) => {
-        setApplicationStatus("Error.. ");
+        setApplicationStatus("Ready.. ");
         errorToast(error.message);
         });
   };
@@ -153,6 +153,7 @@ export default function Home() {
         />
       )}
       <ToastContainer
+        stacked
         position="bottom-center"
         autoClose={false}
         newestOnTop={false}

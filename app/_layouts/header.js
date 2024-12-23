@@ -13,8 +13,10 @@ export default function Header({
   return (
     <header className="flex bg-custom-beige flex-col w-full text-lg">
       <div className="bg-custom-blue w-full py-2"></div>
-      <div className="flex flex-row items-baseline mx-auto md:max-w-4xl md:justify-between md:mx-0">
-        <div className="sm:flex sm:flex-row sm:gap-2 mb-2 mt-1 md:mx-8">
+      <div className="flex flex-col items-center justify-center center content-center md:flex-row md:items-baseline mx-auto md:max-w-4xl md:justify-between md:mx-0">
+        <div className="flex md:hidden font-bold mt-2">EDA JSON Viewer</div>
+
+        <div className="sm:flex sm:flex-row sm:gap-2 mb-2 md:mt-1 md:mx-8">
           <FileMenu
             handleOpenAPIOverlay={handleOpenAPIOverlay}
             handleFileOpen={handleFileOpen}
@@ -25,8 +27,8 @@ export default function Header({
           <Window />
           <Help />
         </div>
-        <div className="font-bold ml-2 md:mx-5">EDA JSON Viewer</div>
-      </div>
+        <div className="flex max-md:hidden md:block font-bold ml-2 md:mx-5">EDA JSON Viewer</div>
+        </div>
 
       <AddressBar
         addressBarText={addressBarText}
@@ -36,3 +38,6 @@ export default function Header({
     </header>
   );
 }
+
+//         <div className="font-bold ml-2 md:mx-5">EDA JSON Viewer</div>
+
