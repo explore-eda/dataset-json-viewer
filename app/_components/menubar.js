@@ -24,7 +24,7 @@ export function FileMenu({ handleOpenAPIOverlay, handleFileOpen, clearFunction, 
     <Menu>
       <MenuButton
         ref={menuButtonRef}
-        className="inline-flex items-center gap-2 rounded-md py-1.5 px-3  shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-gray-100 data-[open]:bg-gray-100 data-[focus]:outline-1 data-[focus]:outline-gray-100"
+        className="inline-flex items-center gap-2 rounded-md py-1.5 px-3 focus:outline-none data-[hover]:bg-gray-100 data-[open]:bg-gray-100 data-[focus]:outline-1 data-[focus]:outline-gray-100"
       >
         File
         <ChevronDownIcon className="size-4 fill-black/60" />
@@ -106,7 +106,7 @@ const FileUploadMenuItem = ({ onFileChange }) => {
 export function Tools() {
   return (
     <Menu>
-      <MenuButton className="inline-flex items-center gap-2 rounded-md py-1.5 px-3  shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-gray-100 data-[open]:bg-gray-100 data-[focus]:outline-1 data-[focus]:outline-gray-100">
+      <MenuButton className="inline-flex items-center gap-2 rounded-md py-1.5 px-3 focus:outline-none data-[hover]:bg-gray-100 data-[open]:bg-gray-100 data-[focus]:outline-1 data-[focus]:outline-gray-100">
         Tools
         <ChevronDownIcon className="size-4 fill-black/60" />
       </MenuButton>
@@ -130,7 +130,7 @@ export function Help() {
   return (
     <Menu>
       <MenuButton
-        className="inline-flex items-center gap-2 rounded-md py-1.5 px-3  shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-gray-100  data-[focus]:outline-1 data-[focus]:outline-gray-100"
+        className="inline-flex items-center gap-2 rounded-md py-1.5 px-3 focus:outline-none data-[hover]:bg-gray-100  data-[focus]:outline-1 data-[focus]:outline-gray-100"
         onClick={() => window.open("", "_blank")}
       >
         Help
@@ -142,7 +142,7 @@ export function Help() {
 export function Window() {
   return (
     <Menu>
-      <MenuButton className="inline-flex items-center gap-2 rounded-md py-1.5 px-3  shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-gray-100 data-[open]:bg-gray-100 data-[focus]:outline-1 data-[focus]:outline-gray-100">
+      <MenuButton className="inline-flex items-center gap-2 rounded-md py-1.5 px-3 focus:outline-none data-[hover]:bg-gray-100 data-[open]:bg-gray-100 data-[focus]:outline-1 data-[focus]:outline-gray-100">
         Window
         <ChevronDownIcon className="size-4 fill-black/60" />
       </MenuButton>
