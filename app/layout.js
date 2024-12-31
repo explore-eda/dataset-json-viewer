@@ -17,8 +17,6 @@ export const metadata = {
   description: "© EDA Clinical",
 };
 
-
-
 export default function RootLayout({ children }) {
 
   return (
@@ -28,7 +26,7 @@ export default function RootLayout({ children }) {
       >
         <ThemeProvider>
           {children}
-          </ThemeProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

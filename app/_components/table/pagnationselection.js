@@ -1,18 +1,22 @@
-import useTableStore from '../../_utils/tablestore'; // Import your store
+import React from 'react';
+import {useTabStore} from '../../_utils/zustand/tablestore';
 
-export default function PaginationSelection() {
-  const { pageNumbers, setCurrentPage } = useTableStore(); // Access state and actions
+const PaginationSelection = () => {
+  const { tabs, currentTab, setOffset } = useTabStore();
 
   return (
     <div>
-      {pageNumbers.map((pageNumber) => (
-        <button
-          key={pageNumber}
-          onClick={() => setCurrentPage(pageNumber)} // Use setCurrentPage action
+      {[...Array(tabs[currentTab]?.totalOffset)].map((_, i) => ( 
+        <button 
+          key={i + 1} 
+          onClick={() => setOffset(currentTab, i + 1)} 
+          className={i + 1 === tabs[currentTab]?.offset ? 'active' : ''}
         >
-          {pageNumber}
+          {i + 1}
         </button>
       ))}
     </div>
   );
-}
+};
+
+export default PaginationSelection;

@@ -1,12 +1,15 @@
-import React from 'react'; 
+import React, { useEffect } from 'react'; 
+import { useTabStore } from "../../_utils/zustand/tablestore";
 
-export default function Pagination({setCurrentPage, pageNumbers, setRowsPerPage, rowsPerPage, dataset}) {
-
-    const totalPages = Math.ceil(dataset.rows.length / rowsPerPage);
+export default function Pagination() {
+    const { 
+        currentTab, 
+        tabs,
+        updatePageNumbers,
+      } = useTabStore(); 
 
     const handleRowsPerPageChange = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setCurrentPage(1);
+        updatePageNumbers(currentTab, event.target.value);
     };
 
     return (
@@ -15,7 +18,7 @@ export default function Pagination({setCurrentPage, pageNumbers, setRowsPerPage,
             <input
             type="number"
             id="rowsPerPageInput"
-          value={rowsPerPage}
+          value={tabs[currentTab]?.rowsPerPage}
           min="1"
           onChange={handleRowsPerPageChange}
           className="w-16 ml-2 border-2 border-gray-400 rounded-md"
