@@ -5,7 +5,7 @@ const useDataStore = create((set) => ({
   apiURL: "", // data source
   fileName: "",
   errorMessage: null,
-  applicationStatus: "Initializing....",
+  applicationStatus: ["Loaded Application"], // Changed to an array
 
   setApiURL: (url) =>
     set({
@@ -23,9 +23,9 @@ const useDataStore = create((set) => ({
     }),
 
   setApplicationStatus: (status) =>
-    set({
-      applicationStatus: status,
-    }),
+    set((state) => ({
+      applicationStatus: [status, ...state.applicationStatus], // Use spread syntax to append
+  })),
 
   resetDataStore: () => set({ apiURL: "", errorMessage: null, fileName: "" }),
 }));
@@ -48,15 +48,20 @@ const useTabStore = create((set) => ({
       tabs: {
         ...state.tabs,
         [tabName]: {
-          useLabels: false,
           datasetOID: tabName,
+          dataset: dataset,
           datasetExtension: extension,
 
-          dataset: dataset,
-          totalRows: dataset.pagination.total,
-          offset: dataset.pagination.offset,
-          rowsPerPage: dataset.pagination.limit,
-          totalOffset: (Math.ceil(dataset.pagination.total / dataset.pagination.limit)),
+          useLabels: false,
+
+          filteringActive: false,
+          sortingActive: false,
+
+          paginationActive: true,
+          total: dataset.pagination.total,
+          limit: dataset.pagination.limit,
+          page: 0,
+          totalPages: (Math.ceil(dataset.pagination.total / dataset.pagination.limit)),
         },
       },
   })),
@@ -72,25 +77,25 @@ const useTabStore = create((set) => ({
       },
   })),
 
-  setOffset: (tabName, number) =>
+  setPage: (tabName, number) =>
     set((state) => ({
       tabs: {
         ...state.tabs,
         [tabName]: {
           ...state.tabs[tabName],
-          offset: number,
+          page: number,
         },
       },
     })),
 
-  updatePageNumbers: (tabName, newRowsPerPage) =>
+  updateLimit: (tabName, newLimit) =>
     set((state) => ({
       tabs: {
         ...state.tabs,
         [tabName]: {
           ...state.tabs[tabName],
-          rowsPerPage: newRowsPerPage,
-          totalOffset: Math.ceil(state.tabs[tabName].totalRows / newRowsPerPage),
+          limit: newLimit,
+          totalPages: Math.ceil(state.tabs[tabName].total / newLimit),
         },
       },
     })),

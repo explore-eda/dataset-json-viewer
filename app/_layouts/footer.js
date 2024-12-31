@@ -1,15 +1,20 @@
 import React from "react";
-import PagnationSelection from "../_components/table/pagnationselection";
+import PageInput from "../_components/table/pageInput";
 import { useDataStore } from "../_utils/zustand/tablestore";
- 
 
 export default function Footer() {
   const { applicationStatus } = useDataStore();
 
   return (
     <footer className="bg-custom-beige w-full h-20 flex text-lg sm:px-0 items-center justify-between">
-      <div className="ml-5">{applicationStatus}</div>
-      <div className="mr-5"><PagnationSelection/></div>
+      <div className="ml-5 overflow-y-auto max-h-16 my-2 max-w-96"> 
+        <ul className="list-none">
+          {applicationStatus.map((status, index) => (
+            <li key={index}>{status}</li>
+          ))}
+        </ul>
+      </div>
+      <div className="mr-5"><PageInput/></div>
     </footer>
   );
 }

@@ -22,12 +22,17 @@ const useFetchNewDataset = () => {
         setCurrentTab(row.datasetOID);
         setLibraryTableActive(false);
       } else {
-        console.log(apiURL + `/${row.datasetOID}/`);
+        if (!navigator.onLine) {
+          setErrorMessage("No internet connection. Please connect and try again.");
+          return false;
+        }
+
         // Make the API request
         fetch(apiURL + `/${row.datasetOID}/`)
           .then((response) => {
             if (!response.ok) {
-              throw new Error("Network response was not ok");
+              setErrorMessage("Network response was not ok");
+              return false;
             }
             return response.json();
           })
@@ -38,12 +43,14 @@ const useFetchNewDataset = () => {
             setCurrentTab(row.datasetOID);
             setLibraryTableActive(false);
             console.log(data);
+            return true;
           })
           .catch((error) => {
             console.error(
               "There has been a problem with your fetch operation:",
               error
             );
+            return false;
           });
         }
   };

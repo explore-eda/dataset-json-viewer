@@ -1,8 +1,13 @@
 import React, { useState, useRef } from "react";
+import { useDataStore } from "../_utils/zustand/tablestore";
 
-export default function AddressBar({ addressBarText, handleOpenAPIOverlay, handleFileOpen }) {
+export default function AddressBar({handleOpenAPIOverlay, handleFileOpen }) {
   const [selectedOption, setSelectedOption] = useState("");
   const fileInputRef = useRef(null);
+
+  const { apiURL } = useDataStore();
+
+
 
   const handleButtonClick = () => {
     console.log("FileUploadMenuItem: Button clicked");
@@ -39,7 +44,7 @@ export default function AddressBar({ addressBarText, handleOpenAPIOverlay, handl
         onChange={handleOptionChange}
       >
 
-      <option value="" disabled >{addressBarText}</option>
+      <option value="" disabled >{apiURL}</option>
       <hr className="my-1 border-gray-400 mb-2" />
       <option value="1">Make API Request</option>
       <option value="2">Open Local File</option>

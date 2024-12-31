@@ -1,6 +1,6 @@
 import React from "react";
 import "./workspace.css";
-import PaginationInput from "../_components/table/pagnationinput";
+import LimitInput from "../_components/table/limitInput";
 import Table from "../_components/table/table";
 import LibraryView from "../_components/table/libraryview";
 import TabList from "../_components/table/tablist";
@@ -26,7 +26,7 @@ const WorkSpace = () => {
         ) : (
           currentTab && (
             <div>
-              <PaginationInput/> 
+              <LimitInput/> 
               <Table/> 
             </div>
           )

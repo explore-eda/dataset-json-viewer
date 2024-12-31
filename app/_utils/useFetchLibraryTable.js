@@ -27,6 +27,11 @@ const useFetchLibraryTable = () => {
   const { handleClear } = useHandleClear();
 
   const fetchLibraryTable = (url) => {
+    if (!navigator.onLine) {
+      setErrorMessage("No internet connection. Please connect and try again.");
+      return false;
+    }
+
     if (url === "") return;
     setApplicationStatus("Fetching new API....");
 
@@ -34,6 +39,7 @@ const useFetchLibraryTable = () => {
       .then((response) => {
         if (!response.ok) {
             setErrorMessage(response.status);
+            return false;
         }
         return response.json();
       })
@@ -46,10 +52,12 @@ const useFetchLibraryTable = () => {
         
         setApiURL(url);
         setApplicationStatus("API Request Successful");
+        return true;
       })
       .catch((error) => {
         setApplicationStatus("Initializing.. ");
         setErrorMessage(error.message);
+        return false;
       });
   };
 
