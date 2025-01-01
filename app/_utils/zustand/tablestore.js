@@ -21,7 +21,7 @@ const useDataStore = create((set) => ({
       applicationStatus: [status, ...state.applicationStatus], // Use spread syntax to append
   })),
 
-  resetDataStore: () => set({ apiURL: "", errorMessage: null, fileName: "" }),
+  resetDataStore: () => set({errorMessage: null, fileName: "", applicationStatus: ["Cleared Application"]}),
 }));
 
 // Handles Data for Tabs
@@ -94,7 +94,7 @@ const useTabStore = create((set) => ({
       },
     })),
 
-  resetTabStore: () => set({ tabs: {}, currentTab: null }),
+  resetTabStore: () => set({ tabs: {}, currentTab: null, tablistActive: false }),
 }));
 
 // Handles Data for Library Table
@@ -120,7 +120,7 @@ const useLibraryTableStore = create((set) => ({
     }),
 
   resetLibraryTableStore: () =>
-    set({ libraryTable: [], libraryTableActive: false }),
+    set({ libraryTable: [], libraryTableActive: false, libraryURL: "" }),
 }));
 
 export { useDataStore, useTabStore, useLibraryTableStore };

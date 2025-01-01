@@ -38,7 +38,6 @@ const useFetchNewDataset = () => {
             return response.json();
           })
           .then((data) => {
-            console.log("Data fetched successfully", data);
             const fileExtension = row.datasetOID.split('.').pop();
             addTab(row.datasetOID, data, fileExtension);
             setCurrentTab(row.datasetOID);

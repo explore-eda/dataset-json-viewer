@@ -52,7 +52,7 @@ const useFetchReloadDataset = () => {
 
     const requestId = Date.now();
   
-    setApplicationStatus(`${requestId}: New API Request: ${request}`);
+    setApplicationStatus(`${requestId}: New API Request: ${queryString}`);
     fetch(request, { signal: abortControllerRef.current.signal }) 
       .then((response) => {
         if (!response.ok) {
@@ -68,7 +68,7 @@ const useFetchReloadDataset = () => {
       .catch((error) => {
         if (error.name === 'AbortError') {
           setApplicationStatus(`${requestId}: Api Request Was Aborted! `);
-          return; 
+          return false; 
         }
         setErrorMessage("There has been a problem with your fetch operation:",
           error
