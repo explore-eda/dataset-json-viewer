@@ -4,15 +4,8 @@ import useHandleClear from './useHandleClear';
 // Separate API request handling
 const useFetchLibraryTable = () => {
   const { 
-    apiURL,
-    setApiURL,
-    fileName,
-    setFileName,
-    applicationStatus,
     setApplicationStatus,
-    dataset,
     setErrorMessage,
-    datasetExtension,
   } = useDataStore();
 
   const {
@@ -20,6 +13,7 @@ const useFetchLibraryTable = () => {
   } = useTabStore();
 
   const {
+    setLibraryURL,
     setLibraryTable,
     setLibraryTableActive,
   } = useLibraryTableStore();
@@ -27,17 +21,18 @@ const useFetchLibraryTable = () => {
   const { handleClear } = useHandleClear();
 
   const fetchLibraryTable = (url) => {
+    if (url === "") return;
     if (!navigator.onLine) {
       setErrorMessage("No internet connection. Please connect and try again.");
       return false;
     }
 
-    if (url === "") return;
-    setApplicationStatus("Fetching new API....");
+    setApplicationStatus("Fetching Library Table: " + url);
 
     fetch(url)
       .then((response) => {
         if (!response.ok) {
+            setApplicationStatus("Failed to fetch library table: " + url);
             setErrorMessage(response.status);
             return false;
         }
@@ -50,12 +45,12 @@ const useFetchLibraryTable = () => {
         setLibraryTableActive(true);
         setTabListActive(true);
         
-        setApiURL(url);
-        setApplicationStatus("API Request Successful");
+        setLibraryURL(url);
+        setApplicationStatus("Successfully fetched library table: " + url);
         return true;
       })
       .catch((error) => {
-        setApplicationStatus("Initializing.. ");
+        setApplicationStatus("Failed to fetch library table: " + url);
         setErrorMessage(error.message);
         return false;
       });

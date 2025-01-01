@@ -1,11 +1,11 @@
 import React, { useState, useRef } from "react";
-import { useDataStore } from "../_utils/zustand/tablestore";
+import { useLibraryTableStore } from "../_utils/zustand/tablestore";
 
 export default function AddressBar({handleOpenAPIOverlay, handleFileOpen }) {
   const [selectedOption, setSelectedOption] = useState("");
   const fileInputRef = useRef(null);
 
-  const { apiURL } = useDataStore();
+  const { libraryURL } = useLibraryTableStore();
 
 
 
@@ -44,7 +44,7 @@ export default function AddressBar({handleOpenAPIOverlay, handleFileOpen }) {
         onChange={handleOptionChange}
       >
 
-      <option value="" disabled >{apiURL}</option>
+      <option value="" disabled >{libraryURL}</option>
       <hr className="my-1 border-gray-400 mb-2" />
       <option value="1">Make API Request</option>
       <option value="2">Open Local File</option>

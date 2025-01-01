@@ -13,7 +13,11 @@ export default function LimitInput() {
   };
 
   useEffect(() => {
-    fetchReloadDataset();
+    const fetchData = async () => { 
+      await fetchReloadDataset();
+    };
+  
+    fetchData(); // Call the async function
   }, [tabs[currentTab].limit]);
 
   return (

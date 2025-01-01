@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useTabStore } from "../../_utils/zustand/tablestore";
+import { useTabStore, useLibraryTableStore } from "../../_utils/zustand/tablestore";
 
 export default function Table () {
   const { tabs, currentTab } = useTabStore();

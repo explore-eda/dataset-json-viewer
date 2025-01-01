@@ -2,15 +2,9 @@ import { create } from "zustand";
 
 // Handles Data for current table
 const useDataStore = create((set) => ({
-  apiURL: "", // data source
   fileName: "",
   errorMessage: null,
   applicationStatus: ["Loaded Application"], // Changed to an array
-
-  setApiURL: (url) =>
-    set({
-      apiURL: url,
-    }),
 
   setErrorMessage: (error) =>
     set({
@@ -108,6 +102,12 @@ const useLibraryTableStore = create((set) => ({
   // Library Table
   libraryTable: [],
   libraryTableActive: false,
+  libraryURL: "", // data source
+
+  setLibraryURL: (url) =>
+    set({
+      libraryURL: url,
+  }),
 
   setLibraryTableActive: (value) =>
     set({

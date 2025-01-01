@@ -7,7 +7,7 @@ export default function Footer() {
 
   return (
     <footer className="bg-custom-beige w-full h-20 flex text-lg sm:px-0 items-center justify-between">
-      <div className="ml-5 overflow-y-auto max-h-16 my-2 max-w-96"> 
+      <div className="ml-5 overflow-y-auto max-h-16 my-2 w-full"> 
         <ul className="list-none">
           {applicationStatus.map((status, index) => (
             <li key={index}>{status}</li>

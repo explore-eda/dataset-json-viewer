@@ -3,7 +3,7 @@ import { useDataStore, useTabStore, useLibraryTableStore } from "./zustand/table
 // Separate API request handling
 const useFetchNewDataset = () => {
   const { 
-    apiURL,
+    setErrorMessage,
   } = useDataStore();
 
   const {
@@ -13,6 +13,7 @@ const useFetchNewDataset = () => {
   } = useTabStore();
 
   const {
+    libraryURL,
     setLibraryTableActive,
   } = useLibraryTableStore();
 
@@ -28,7 +29,7 @@ const useFetchNewDataset = () => {
         }
 
         // Make the API request
-        fetch(apiURL + `/${row.datasetOID}/`)
+        fetch(libraryURL + `/${row.datasetOID}/`)
           .then((response) => {
             if (!response.ok) {
               setErrorMessage("Network response was not ok");
@@ -37,12 +38,11 @@ const useFetchNewDataset = () => {
             return response.json();
           })
           .then((data) => {
-            console.log(data);
+            console.log("Data fetched successfully", data);
             const fileExtension = row.datasetOID.split('.').pop();
             addTab(row.datasetOID, data, fileExtension);
             setCurrentTab(row.datasetOID);
             setLibraryTableActive(false);
-            console.log(data);
             return true;
           })
           .catch((error) => {

@@ -15,12 +15,7 @@ const PageInput = () => {
   }, [tabs[currentTab]?.page]);
 
   useEffect(() => {
-    console.log('total pages changed');
-    console.log(tabs[currentTab]?.totalPages);
-    console.log(tabs[currentTab]?.page);
-
     if(tabs[currentTab]?.page > tabs[currentTab]?.totalPages-1) {
-      console.log('setting page to last page');
       setPage(currentTab, tabs[currentTab]?.totalPages - 1);
     }
   }, [tabs[currentTab]?.totalPages]);
