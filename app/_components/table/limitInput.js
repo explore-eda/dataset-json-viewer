@@ -1,9 +1,7 @@
 import React, { useEffect } from "react";
 import { useTabStore } from "../../_utils/zustand/tablestore";
-import useFetchReloadDataset from "../../_utils/useFetchReloadDataset";
 
 export default function LimitInput() {
-  const { fetchReloadDataset } = useFetchReloadDataset();
 
   const { currentTab, tabs, updateLimit } = useTabStore();
 

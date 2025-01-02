@@ -1,8 +1,7 @@
 import React from "react";
 import { useTabStore, useDataStore } from "../../_utils/zustand/tablestore";
 
-export default function TabList() {
-  const { tabs, currentTab, setCurrentTab, removeTab } = useTabStore();
+export default function TabList({tabs, currentTab, setCurrentTab, removeTab}) {
   const { setApplicationStatus } = useDataStore();
 
   const handleTableClick = (tabName) => {

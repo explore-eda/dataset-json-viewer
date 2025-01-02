@@ -1,26 +1,14 @@
 import React from "react";
-import { useTabStore} from "../../_utils/zustand/tablestore";
-import useFetchDatasetFromLibrary from '../../_utils/useFetchDatasetFromLibrary'; 
 
-function LibraryView() {
-  const { fetchDatasetFromLibrary } = useFetchDatasetFromLibrary(); 
-  const {tabs, currentTab, setCurrentTab} = useTabStore();
+function LibraryView({tab, handleDatasetFromLibrary}) {
 
-  const columns = Object.keys(tabs[currentTab].dataset[0] || {});
-  const libraryTable = tabs[currentTab].dataset;
+  const columns = Object.keys(tab.dataset[0] || {});
+  const libraryTable = tab.dataset;
 
-  const handleClick = async (event, row) => {
-    if (event.shiftKey) { 
-      event.preventDefault(); 
-      const value = await fetchDatasetFromLibrary(row.datasetOID); 
-  
-    } else {
-      const value = await fetchDatasetFromLibrary(row.datasetOID); 
-  
-      if (value) {
-        setCurrentTab(row.datasetOID); 
-      }
-    }
+  const handleClick = (event, row) => {
+    console.log(event);
+    console.log(row);
+    handleDatasetFromLibrary(event, row.datasetOID);
   };
 
   return (

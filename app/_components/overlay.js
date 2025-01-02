@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 
-export default function Overlay({ callApi, setShowInputOverlay }) {
+export default function Overlay({ fetchTable, setShowInputOverlay }) {
   const [url, setUrl] = useState("");
   const [selectedStudy, setSelectedStudy] = useState("");
+  const [selectedDataset, setSelectedDataset] = useState("");
   const [newApiAddress, setNewApiAddress] = useState("");
-  const [studies, setStudies] = useState([]);
 
+  const [studies, setStudies] = useState([]);
+  const [dataset, setDataset] = useState([]);
 
   const handleOverlaySave = () => {
-    callApi(url, selectedStudy) ;
+    fetchTable(url, selectedStudy, selectedDataset) ;
     setShowInputOverlay(false);
   };
 
@@ -22,6 +24,7 @@ export default function Overlay({ callApi, setShowInputOverlay }) {
     setStudies([]);
     setSelectedStudy("");
     setNewApiAddress("");
+    setDataset([]);
   }
 
   const handleNewUrl = (url) => {
@@ -49,6 +52,31 @@ export default function Overlay({ callApi, setShowInputOverlay }) {
     const selectedStudy = e.target.value;
     setSelectedStudy(selectedStudy);
     setNewApiAddress(url + "/studies/" + selectedStudy + "/datasets");
+    fetchDataset(selectedStudy);
+  };
+
+  const fetchDataset = async (selectedStudy) => {
+    try {
+      console.log("Fetching datasets from:", url + "/studies/" + selectedStudy + "/datasets");
+      const response = await fetch(url + "/studies/" + selectedStudy + "/datasets");
+      const data = await response.json();
+
+      console.log("datasets", data);
+
+      const datasetOptions = data.map(dataset => ({
+        name: dataset.datasetOID,
+      }));
+      setDataset(datasetOptions);
+      
+    } catch (error) {
+      console.error("Error fetching datasets:", error);
+    }
+  };
+
+  const handleDatasetChange = (e) => {
+    const selectedDataset = e.target.value;
+    setSelectedDataset(selectedDataset);
+    setNewApiAddress(url + "/datasets/" + selectedDataset);
   };
 
   return (
@@ -90,17 +118,38 @@ export default function Overlay({ callApi, setShowInputOverlay }) {
             htmlFor="fileSelect"
             className="block text-gray-700 font-bold mb-2"
           >
-            Select File:
+            Select Study:
           </label>
           <select
             id="fileSelect"
             className="shadow appearance-none border rounded w-72 md:w-96 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             onChange={handleFileChange}
           >
-            <option value="">Select a file</option>
-            {studies.map((file) => (
-              <option key={file.name} value={file.name}>
-                {file.name} - {file.description}  
+            <option value="">Select a Study</option>
+            {studies.map((study) => (
+              <option key={study.name} value={study.name}>
+                {study.name}  
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="mb-4 w-72 md:w-96">
+          <label
+            htmlFor="fileSelect"
+            className="block text-gray-700 font-bold mb-2"
+          >
+            Select Dataset:
+          </label>
+          <select
+            id="fileSelect"
+            className="shadow appearance-none border rounded w-72 md:w-96 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            onChange={handleDatasetChange}
+          >
+            <option value="">Select a Dataset</option>
+            {dataset.map((dataset) => (
+              <option key={dataset.name}>
+                {dataset.name}  
               </option>
             ))}
           </select>

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useTabStore } from "../../_utils/zustand/tablestore";
-import useFetchReloadDataset from "../../_utils/useFetchReloadDataset";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 
 export default function FilteringOverlay({ showOverlay, setShowOverlay }) {

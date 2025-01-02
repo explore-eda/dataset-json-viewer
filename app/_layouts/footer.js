@@ -2,7 +2,7 @@ import React from "react";
 import PageInput from "../_components/table/pageInput";
 import { useDataStore } from "../_utils/zustand/tablestore";
 
-export default function Footer() {
+export default function Footer({tab, setPage}) {
   const { applicationStatus } = useDataStore();
 
   return (
@@ -14,7 +14,7 @@ export default function Footer() {
           ))}
         </ul>
       </div>
-      <div className="mr-5"><PageInput/></div>
+      <div className="mr-5"><PageInput tab={tab} setPage={setPage}/></div>
     </footer>
   );
 }

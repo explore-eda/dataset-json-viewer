@@ -1,20 +1,16 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useTabStore } from "../../_utils/zustand/tablestore";
+export default function Table ({tab}) {
 
-export default function Table () {
-  const { tabs, currentTab } = useTabStore();
-
- const dataset = tabs[currentTab]?.dataset;
+ const dataset = tab.dataset;
   if(!dataset) return null;
 
-  const page = tabs[currentTab].page;
-  const limit = tabs[currentTab].limit;
-  const totalPages = tabs[currentTab].totalPages;
+  const page = tab.page;
+  const limit = tab.limit;
+  const totalPages = tab.totalPages;
 
   const rowNumbers = [];
-for (let i = 0; i < limit; i++) {
-  rowNumbers.push(page * limit + i + 1);
-}
+  for (let i = 0; i < limit; i++) {
+    rowNumbers.push(page * limit + i + 1);
+  }
 
 const processedRows = dataset.rows.map((row, rowIndex) => {
   const lowerCaseRow = {};
@@ -28,9 +24,6 @@ const processedColumns = dataset.columns.map(column => ({
   ...column,
   name: column.name.toLowerCase()
 }));
-
-console.log(processedColumns);
-console.log(processedRows);
 
   const handleHeaderClick = (columnIndex) => {
     // Implement your header click logic here (e.g., sorting)
@@ -53,7 +46,7 @@ console.log(processedRows);
               }`}
               className={column.keySequence ? "key-sequence" : ""}
             >
-              {tabs[currentTab].useLabels ? column.label : column.name}
+              {tab.useLabels ? column.label : column.name}
             </th>
           ))}
         </tr>

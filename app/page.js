@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import Header from "./_layouts/header";
 import WorkSpace from "./_layouts/workspace";
 import Footer from "./_layouts/footer";
@@ -8,19 +9,101 @@ import { useState, useEffect } from "react";
 import "./globals.css";
 import { ToastContainer, toast, Bounce } from "react-toastify";
 import {useDataStore} from "./_utils/zustand/tablestore";
-import useHandleClear from "./_utils/useHandleClear";
-import useFetchTable from "./_utils/useFetchTable";
 import useOpenFileDataset from "./_utils/useOpenFileDataset";
 import FilteringOverlay from "./_components/table/filteringOverlay";
+import TabList from "./_components/table/tablist";
 
 
 export default function Home() {
-  const { handleClear } = useHandleClear();
-  const { fetchTable } = useFetchTable();
   const { openFileDataset } = useOpenFileDataset();
+
+  const [tabs, setTabs] = useState({});
+  const [currentTab, setCurrentTab] = useState("");
+  
+  const addTab = (tabName, dataset, dataSource, dataType, sourceType) => {
+    setTabs(prevTabs => ({
+      ...prevTabs,
+      [tabName]: {
+        tabID: tabName,
+        dataSource: dataSource,
+        datasetOID: tabName,
+        dataset: dataset,
+        type: dataType,
+        sourceType: sourceType,
+
+        useLabels: false,
+
+        filteringActive: false,
+        sortModel: [],
+
+        paginationActive: true,
+        page: 0,
+        total: dataset.pagination?.total ?? dataset.rows?.length ?? 0,
+        limit: dataset.pagination?.limit ?? dataset.rows?.limit ?? 10,
+        totalPages: dataset.pagination ? Math.ceil(dataset.pagination.total / dataset.pagination.limit) : 0,
+      },
+    }));
+  };
+
+  const removeTab = (tabName) => {
+    setTabs((prevTabs) => {
+      const newTabs = { ...prevTabs };
+      delete newTabs[tabName];
+  
+      let newCurrentTab = currentTab;
+      if (currentTab === tabName) {
+        const tabKeys = Object.keys(newTabs); 
+        newCurrentTab = tabKeys[tabKeys.length - 1] || null; 
+        setCurrentTab(newCurrentTab); 
+      }
+  
+      return newTabs;
+    });
+  };
+
+
+  const setDataset = (tabName, dataset) => {
+    setTabs(prevTabs => ({
+      ...prevTabs,
+      [tabName]: {
+        ...prevTabs[tabName], 
+        dataset: dataset,
+      }
+    }));
+  };
+
+  
+
+  const setPage = (tabName, number) => {
+    console.log("pre ", number);
+
+    setTabs((prevTabs) => ({
+      ...prevTabs, 
+      [tabName]: {
+        ...prevTabs[tabName], 
+        page: number 
+      }
+    }));
+
+    if(tabs[tabName].page > tabs[tabName].totalPages-1) {
+      setPage(tabs[tabName]?.tabID, tabs[tabName]?.totalPages - 1);
+    }
+  };
+
+  const updateLimit = (tabName, newLimit) => {
+    setTabs(prevTabs => ({
+      ...prevTabs,
+      [tabName]: {
+        ...prevTabs[tabName], 
+        limit: newLimit,
+        totalPages: Math.ceil(state.tabs[tabName].total / newLimit),
+                  }
+    }));
+  };  
 
   const { 
     errorMessage,
+    setApplicationStatus,
   } = useDataStore();
 
   useEffect(() => {
@@ -32,7 +115,6 @@ export default function Home() {
   // API Input
   const [showApiURLInputOverlay, setShowAPIURLInputOverlay] = useState(false);
   const [showFilteringOverlay, setShowFilteringOverlay] = useState(false);
-
 
   const errorToast = (message) => {
     toast.error(message, {
@@ -48,8 +130,44 @@ export default function Home() {
       });
   }
 
-  const callApi = (url, selectedStudy) => {
-    fetchTable(url, selectedStudy);
+  const fetchTable = (url, selectedStudy, selectedData) => {
+    if (url === "" || selectedStudy == "") return;
+    if (!navigator.onLine) {
+      setErrorMessage("No internet connection. Please connect and try again.");
+      return false;
+    }
+
+    const request = url + "/studies/" + selectedStudy + "/datasets" + "/" + selectedData;
+    setApplicationStatus(`[${selectedStudy}] Fetching New Table "`);
+    return fetch(request)
+      .then((response) => {
+        if (!response.ok) {
+            setApplicationStatus(`[${selectedStudy}] Failed to fetch new table `);
+            setErrorMessage(response.status);
+            return false;
+        }
+        return response.json();
+      })
+      .then((data) => {
+        if(selectedData){
+          addTab(selectedData, data, request, "dataset", "api");
+          setCurrentTab(selectedData);
+        
+          setApplicationStatus(`[${selectedData}] Successfully fetched table `);
+          return true;
+        } else {
+          addTab(selectedStudy, data, request, "library", "api");
+          setCurrentTab(selectedStudy);
+        
+          setApplicationStatus(`[${selectedStudy}] Successfully fetched table `);
+          return true;
+        }
+      })
+      .catch((error) => {
+        setApplicationStatus("Failed to fetch table: " + request);
+        setErrorMessage(error.message);
+        return false;
+      });  
   };
 
   // Handle File Open
@@ -79,6 +197,64 @@ export default function Home() {
 
   };
 
+  const handleDatasetFromLibrary = (event, datasetOID) => {
+    if (event.shiftKey) { 
+      event.preventDefault(); 
+      fetchDatasetFromLibrary(datasetOID); 
+  
+    } else {
+      const value = fetchDatasetFromLibrary(datasetOID); 
+
+      if (value) {
+        setCurrentTab(datasetOID); 
+      }
+    }
+  };
+
+  const fetchDatasetFromLibrary = (datasetOID) => {
+    if (tabs.hasOwnProperty(datasetOID)) {
+      return true;
+    } else {
+      if (!navigator.onLine) {
+        setErrorMessage(
+          "No internet connection. Please connect and try again."
+        );
+        return false;
+      }
+
+      // Make the API request
+      const request = tabs[currentTab].dataSource + `/${datasetOID}`;
+      setApplicationStatus(`[${datasetOID}]: Fetching New Dataset`);
+      return fetch(request)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          if(data === false) {
+            return false;
+          }
+          // This block only executes if response.ok was true
+          console.log(data);
+          addTab(datasetOID, data, request, "dataset", "api");
+          setApplicationStatus(`[${datasetOID}]: Successfully fetched dataset `);
+          return true;
+        })
+        .catch((error) => {
+          setErrorMessage(`[${datasetOID}]: `  + error.message);
+          setApplicationStatus(`[${datasetOID}]: `  + error.message);
+          return false;
+        });
+    }
+  };
+
+  const handleClear = () => {
+    setTabs({});
+    setCurrentTab(null);
+  }
+
   return (
     <div className="flex flex-col h-screen">
       <Header
@@ -88,12 +264,15 @@ export default function Home() {
         clearFunction={handleClear}
         setShowFilteringOverlay={() => setShowFilteringOverlay(true)}
       />
-      <WorkSpace />
-      <Footer/>
-
+      <div className="background h-full w-full">
+        <TabList tabs={tabs} currentTab={currentTab} setCurrentTab={setCurrentTab} removeTab={removeTab}/>
+        <WorkSpace tab={tabs[currentTab]} handleDatasetFromLibrary={handleDatasetFromLibrary} setDataset={setDataset}/>
+      </div>
+      <Footer tab={tabs[currentTab]} setPage={setPage}/>
+      
       {showApiURLInputOverlay && (
         <Overlay
-          callApi={callApi}
+          fetchTable={fetchTable}
           setShowInputOverlay={setShowAPIURLInputOverlay}
         />
       )}
