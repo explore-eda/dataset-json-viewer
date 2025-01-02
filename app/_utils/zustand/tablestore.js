@@ -2,7 +2,6 @@ import { create } from "zustand";
 
 // Handles Data for current table
 const useDataStore = create((set) => ({
-  fileName: "",
   errorMessage: null,
   applicationStatus: ["Loaded Application"],
 
@@ -11,17 +10,12 @@ const useDataStore = create((set) => ({
       errorMessage: error,
     }),
 
-  setFileName: (file) =>
-    set({
-      fileName: file,
-    }),
-
   setApplicationStatus: (status) =>
     set((state) => ({
       applicationStatus: [status, ...state.applicationStatus],
   })),
 
-  resetDataStore: () => set({errorMessage: null, fileName: "", applicationStatus: ["Cleared Application"]}),
+  resetDataStore: () => set({errorMessage: null, applicationStatus: ["Cleared Application"]}),
 }));
 
 // Handles Data for Tabs
