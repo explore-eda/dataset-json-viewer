@@ -4,7 +4,7 @@ import { create } from "zustand";
 const useDataStore = create((set) => ({
   fileName: "",
   errorMessage: null,
-  applicationStatus: ["Loaded Application"], // Changed to an array
+  applicationStatus: ["Loaded Application"],
 
   setErrorMessage: (error) =>
     set({
@@ -18,7 +18,7 @@ const useDataStore = create((set) => ({
 
   setApplicationStatus: (status) =>
     set((state) => ({
-      applicationStatus: [status, ...state.applicationStatus], // Use spread syntax to append
+      applicationStatus: [status, ...state.applicationStatus],
   })),
 
   resetDataStore: () => set({errorMessage: null, fileName: "", applicationStatus: ["Cleared Application"]}),
@@ -28,37 +28,62 @@ const useDataStore = create((set) => ({
 const useTabStore = create((set) => ({
   tabs: {},
   currentTab: null,
-  tablistActive: false,
 
   setCurrentTab: (tabName) => set({ currentTab: tabName }),
 
-  setTabListActive: (value) =>
-    set({
-      tablistActive: value,
-    }),
-
-  addTab: (tabName, dataset, extension) =>
+  addTab: (tabName, dataset, dataSource, dataType, sourceType) =>
     set((state) => ({
       tabs: {
         ...state.tabs,
         [tabName]: {
+          dataSource: dataSource,
           datasetOID: tabName,
           dataset: dataset,
-          datasetExtension: extension,
+          type: dataType,
+          sourceType: sourceType,
 
           useLabels: false,
 
           filteringActive: false,
-          sortingActive: false,
+          sortModel: [],
+          
 
           paginationActive: true,
-          total: dataset.pagination.total,
-          limit: dataset.pagination.limit,
           page: 0,
-          totalPages: (Math.ceil(dataset.pagination.total / dataset.pagination.limit)),
+          total: dataset.pagination?.total ?? dataset.rows?.length ?? 0,
+          limit: dataset.pagination?.limit ?? dataset.rows?.limit ?? 10,
+          totalPages: dataset.pagination ? Math.ceil(dataset.pagination.total / dataset.pagination.limit) : 0,
         },
       },
   })),
+
+  setSortModel: (tabName, sortModel) =>
+    set((state) => ({
+      tabs: {
+        ...state.tabs,
+        [tabName]: {
+          ...state.tabs[tabName],
+          sortModel: sortModel,
+        },
+      },
+  })),
+
+  removeTab: (tabName) =>
+    set((state) => {
+      const newTabs = { ...state.tabs };
+      delete newTabs[tabName];
+
+      let newCurrentTab = state.currentTab;
+      if (state.currentTab === tabName) {
+        newCurrentTab = null;
+      }
+
+      return { 
+        ...state,
+        tabs: newTabs, 
+        currentTab: newCurrentTab 
+      };
+    }),
 
   setDataset: (tabName, dataset) =>
     set((state) => ({
@@ -70,6 +95,8 @@ const useTabStore = create((set) => ({
         },
       },
   })),
+
+  
 
   setPage: (tabName, number) =>
     set((state) => ({
@@ -94,33 +121,7 @@ const useTabStore = create((set) => ({
       },
     })),
 
-  resetTabStore: () => set({ tabs: {}, currentTab: null, tablistActive: false }),
+  resetTabStore: () => set({ tabs: {}, currentTab: null}),
 }));
 
-// Handles Data for Library Table
-const useLibraryTableStore = create((set) => ({
-  // Library Table
-  libraryTable: [],
-  libraryTableActive: false,
-  libraryURL: "", // data source
-
-  setLibraryURL: (url) =>
-    set({
-      libraryURL: url,
-  }),
-
-  setLibraryTableActive: (value) =>
-    set({
-      libraryTableActive: value,
-    }),
-
-  setLibraryTable: (json) =>
-    set({
-      libraryTable: json,
-    }),
-
-  resetLibraryTableStore: () =>
-    set({ libraryTable: [], libraryTableActive: false, libraryURL: "" }),
-}));
-
-export { useDataStore, useTabStore, useLibraryTableStore };
+export { useDataStore, useTabStore };

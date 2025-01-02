@@ -3,11 +3,13 @@ import { XMarkIcon } from "@heroicons/react/24/solid";
 
 export default function Overlay({ callApi, setShowInputOverlay }) {
   const [url, setUrl] = useState("");
+  const [selectedStudy, setSelectedStudy] = useState("");
   const [newApiAddress, setNewApiAddress] = useState("");
   const [studies, setStudies] = useState([]);
 
-  const handleOverlaySave = (newApiAddress) => {
-    callApi(newApiAddress);
+
+  const handleOverlaySave = () => {
+    callApi(url, selectedStudy) ;
     setShowInputOverlay(false);
   };
 
@@ -18,6 +20,7 @@ export default function Overlay({ callApi, setShowInputOverlay }) {
   const handleUrlChange = (url) => {
     setUrl(url);
     setStudies([]);
+    setSelectedStudy("");
     setNewApiAddress("");
   }
 
@@ -44,6 +47,7 @@ export default function Overlay({ callApi, setShowInputOverlay }) {
 
   const handleFileChange = (e) => {
     const selectedStudy = e.target.value;
+    setSelectedStudy(selectedStudy);
     setNewApiAddress(url + "/studies/" + selectedStudy + "/datasets");
   };
 

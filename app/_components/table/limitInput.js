@@ -13,24 +13,28 @@ export default function LimitInput() {
   };
 
   useEffect(() => {
-    const fetchData = async () => { 
-      await fetchReloadDataset();
-    };
+    if(!(tabs[currentTab].type === "library" && tabs[currentTab].sourceType === "local")) {
+      const fetchData = async () => { 
+        await fetchReloadDataset();
+      };
   
-    fetchData(); // Call the async function
-  }, [tabs[currentTab].limit]);
+      fetchData();
+    }
+  }, [tabs[currentTab]?.limit]);
 
   return (
-    <div>
-      <label htmlFor="rowsPerPageInput">Rows per page:</label>
-      <input
-        type="number"
-        id="limitInput"
-        min={1}
-        value={tabs[currentTab]?.limit}
-        onChange={handleLimitChange}
-        className="w-16 ml-2 border-2 border-gray-400 rounded-md"
-      />
-    </div>
+    tabs[currentTab]?.limit && (
+      <div>
+        <label htmlFor="rowsPerPageInput">Rows per page:</label>
+        <input
+          type="number"
+          id="limitInput"
+          min={1}
+          value={tabs[currentTab]?.limit || 1} // Default to 1 if limit is undefined or null
+          onChange={handleLimitChange}
+          className="w-16 ml-2 border-2 border-gray-400 rounded-md"
+        />
+      </div>
+    )
   );
 }

@@ -11,7 +11,9 @@ const PageInput = () => {
   }
 
   useEffect(() => {
-    fetchReloadDataset();
+    if(!(tabs[currentTab]?.type === "library")) {
+      fetchReloadDataset();
+    }
   }, [tabs[currentTab]?.page]);
 
   useEffect(() => {

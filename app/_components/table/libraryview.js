@@ -1,35 +1,53 @@
-import React, { useState, useEffect } from "react";
-import { useTabStore, useLibraryTableStore, useDataStore } from "../../_utils/zustand/tablestore";
-import useFetchNewDataset from '../../_utils/useFetchNewDataset'; 
+import React from "react";
+import { useTabStore} from "../../_utils/zustand/tablestore";
+import useFetchDatasetFromLibrary from '../../_utils/useFetchDatasetFromLibrary'; 
 
 function LibraryView() {
-  const { fetchNewDataset } = useFetchNewDataset(); 
-  const { libraryTable } = useLibraryTableStore();
+  const { fetchDatasetFromLibrary } = useFetchDatasetFromLibrary(); 
+  const {tabs, currentTab, setCurrentTab} = useTabStore();
 
-  const columns = Object.keys(libraryTable[0] || {});
+  const columns = Object.keys(tabs[currentTab].dataset[0] || {});
+  const libraryTable = tabs[currentTab].dataset;
 
-  const handleClick = (row) => {
-    fetchNewDataset(row);
+  const handleClick = async (event, row) => {
+    if (event.shiftKey) { 
+      event.preventDefault(); 
+      const value = await fetchDatasetFromLibrary(row.datasetOID); 
+  
+    } else {
+      const value = await fetchDatasetFromLibrary(row.datasetOID); 
+  
+      if (value) {
+        setCurrentTab(row.datasetOID); 
+      }
+    }
   };
 
   return (
     <div className="flex flex-col w-full overflow-auto rounded shadow-md">
-      <div className="-mx-1 overflow-x-auto sm:-mx-2">
-        <table className="min-w-full w-full table-auto divide-y divide-gray-200">
-          <thead>
+      <div className="overflow-x-auto">
+        <table className="min-w-full w-full table-auto divide-y divide-gray-200 mb-5">
+          <thead className="bg-gray-50">
             <tr>
               {columns.map((column) => (
-                <th key={column} className="px-4 py-2 text-left">
+                <th 
+                  key={column} 
+                  className="px-6 py-3 text-left font-bold tracking-wider" 
+                >
                   {column}
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
+          <tbody className="bg-white divide-y divide-gray-200">
             {libraryTable.map((row) => (
-              <tr key={row.datasetOID} className="hover:bg-gray-100" onClick={() => handleClick(row)}>
+              <tr 
+                key={row.datasetOID} 
+                className="hover:bg-gray-100 cursor-pointer"
+                onClick={(event) => handleClick(event, row)}
+              >
                 {columns.map((column) => (
-                  <td key={`${row.datasetOID}-${column}`} className="px-4 py-2">
+                  <td key={`${row.datasetOID}-${column}`} className="px-6 py-4 whitespace-nowrap"> 
                     {row[column]}
                   </td>
                 ))}

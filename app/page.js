@@ -9,11 +9,15 @@ import "./globals.css";
 import { ToastContainer, toast, Bounce } from "react-toastify";
 import {useDataStore} from "./_utils/zustand/tablestore";
 import useHandleClear from "./_utils/useHandleClear";
-import useFetchLibraryTable from "./_utils/useFetchLibraryTable";
+import useFetchTable from "./_utils/useFetchTable";
+import useOpenFileDataset from "./_utils/useOpenFileDataset";
+import FilteringOverlay from "./_components/table/filteringOverlay";
+
 
 export default function Home() {
   const { handleClear } = useHandleClear();
-  const { fetchLibraryTable } = useFetchLibraryTable(); 
+  const { fetchTable } = useFetchTable();
+  const { openFileDataset } = useOpenFileDataset();
 
   const { 
     errorMessage,
@@ -27,6 +31,8 @@ export default function Home() {
 
   // API Input
   const [showApiURLInputOverlay, setShowAPIURLInputOverlay] = useState(false);
+  const [showFilteringOverlay, setShowFilteringOverlay] = useState(false);
+
 
   const errorToast = (message) => {
     toast.error(message, {
@@ -42,39 +48,13 @@ export default function Home() {
       });
   }
 
-  const callApi = (url) => {
-    fetchLibraryTable(url);
+  const callApi = (url, selectedStudy) => {
+    fetchTable(url, selectedStudy);
   };
 
   // Handle File Open
   const handleFileOpen = (file) => {
-    /*
-    setApplicationStatus("File Opening....");
-
-    const reader = new FileReader();
-
-    reader.onload = (e) => {
-      try {
-        handleClear();
-        const jsonData = JSON.parse(e.target.result);
-        setAddressBarText(file.name);
-
-        handleJSONType(jsonData);
-
-        setApplicationStatus("Opened File");
-      } catch (error) {
-        setApplicationStatus("Initializing.. ");
-        errorToast(error.message);
-      }
-    };
-
-    reader.onerror = (error) => {
-      setApplicationStatus("Initializing.. ");
-      errorToast(error.message);
-    };
-
-    reader.readAsText(file);
-        */
+    openFileDataset(file);
   };
 
   const handleDownload = () => {
@@ -106,6 +86,7 @@ export default function Home() {
         handleOpenAPIOverlay={() => setShowAPIURLInputOverlay(true)}
         handleDownload={handleDownload}
         clearFunction={handleClear}
+        setShowFilteringOverlay={() => setShowFilteringOverlay(true)}
       />
       <WorkSpace />
       <Footer/>
@@ -114,6 +95,11 @@ export default function Home() {
         <Overlay
           callApi={callApi}
           setShowInputOverlay={setShowAPIURLInputOverlay}
+        />
+      )}
+      {showFilteringOverlay && (
+        <FilteringOverlay
+          setShowInputOverlay={setShowFilteringOverlay}
         />
       )}
       <ToastContainer

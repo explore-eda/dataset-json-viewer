@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useTabStore, useLibraryTableStore } from "../../_utils/zustand/tablestore";
+import { useTabStore } from "../../_utils/zustand/tablestore";
 
 export default function Table () {
   const { tabs, currentTab } = useTabStore();
 
- const dataset = tabs[currentTab].dataset;
+ const dataset = tabs[currentTab]?.dataset;
   if(!dataset) return null;
 
   const page = tabs[currentTab].page;
@@ -28,6 +28,9 @@ const processedColumns = dataset.columns.map(column => ({
   ...column,
   name: column.name.toLowerCase()
 }));
+
+console.log(processedColumns);
+console.log(processedRows);
 
   const handleHeaderClick = (columnIndex) => {
     // Implement your header click logic here (e.g., sorting)
@@ -58,7 +61,6 @@ const processedColumns = dataset.columns.map(column => ({
       <tbody>
         {processedRows.map((row, rowIndex) => (
           <tr key={rowIndex}>
-            {/* Display the calculated row number from the row object */}
             <td key="rowNumber">{row.rowNumber}</td>
             {processedColumns.map((col, colIndex) => (
               <td key={colIndex}>{row[col.name] || "N/A"}</td>

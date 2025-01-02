@@ -1,4 +1,4 @@
-import { useDataStore, useTabStore, useLibraryTableStore } from "./zustand/tablestore";
+import { useDataStore, useTabStore } from "./zustand/tablestore";
 import { useRef } from "react";
 
 const useFetchReloadDataset = () => {
@@ -12,10 +12,6 @@ const useFetchReloadDataset = () => {
     setDataset,
     currentTab
   } = useTabStore();
-
-  const {
-    libraryURL
-  } = useLibraryTableStore();
 
   const abortControllerRef = useRef(new AbortController());
 
@@ -36,8 +32,9 @@ const useFetchReloadDataset = () => {
       queryString += `filter=${tab.filter}&`;
     }
   
-    if (tab.sortingActive) {
-      queryString += `sort=${tab.sortField}:${tab.sortOrder}&`;
+    if (tab.sortModel.length > 0) {
+      const sortParams = tab.sortModel.map(sort => `${sort.colId}:${sort.sort}`).join(',');
+      queryString += `sort=${sortParams}&`; 
     }
   
     if (tab.paginationActive) {
@@ -45,7 +42,7 @@ const useFetchReloadDataset = () => {
       queryString += `offset=${offset}&limit=${tab.limit}`;
     }
   
-    const request = `${libraryURL}/${tab.datasetOID}?${queryString}`;
+    const request = `${tabs[currentTab].dataSource}?${queryString}`;
 
     abortControllerRef.current.abort(); 
     abortControllerRef.current = new AbortController(); // Create a new AbortController
