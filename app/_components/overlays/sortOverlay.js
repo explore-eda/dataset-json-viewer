@@ -8,10 +8,10 @@ export default function SortOverlay({
   handleUpdate,
 }) {
   const [columns, setColumns] = useState(
-    tab.dataset.columns?.map((column) => column.name) || []
+    tab?.dataset.columns?.map((column) => column.name) || []
   );
 
-  const [sortFilters, setSortedColumns] = useState(tab.sortFilters || []);
+  const [sortFilters, setSortedColumns] = useState(tab?.sortFilters || []);
 
   const [columnsDirections, setColumnsDirections] = useState(
     columns.reduce((acc, col) => ({ ...acc, [col]: "asc" }), {})
@@ -52,7 +52,7 @@ export default function SortOverlay({
 
   useEffect(() => {
     if (!tab || tab?.type === "library") {
-      errorToast("Tools Not Available for Current Table");
+      errorToast("Please Select a Valid Table");
       setShowOverlay(false);
     }
   }, []);

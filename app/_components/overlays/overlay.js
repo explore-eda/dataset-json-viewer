@@ -14,8 +14,15 @@ export default function Overlay({ fetchTable, setShowInputOverlay }) {
   const [pages, setPages] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
+  const handleRowsPerPageChange = (e) => {
+    if (e.target.value <= 0 || isNaN(e.target.value)) {
+      return;
+    }
+    setRowsPerPage(e.target.value);
+  };
+
   const handleOverlaySave = () => {
-    fetchTable(url, selectedStudy, selectedDataset);
+    fetchTable(url, selectedStudy, selectedDataset, rowsPerPage);
     setShowInputOverlay(false);
   };
 
@@ -56,7 +63,7 @@ export default function Overlay({ fetchTable, setShowInputOverlay }) {
 
   const handleFileChange = (e) => {
     const selectedStudy = e.target.value;
-    if(selectedStudy) {
+    if (selectedStudy) {
       setSelectedStudy(selectedStudy);
       setNewApiAddress(url + "/studies/" + selectedStudy + "/datasets");
       fetchDataset(selectedStudy);
@@ -134,7 +141,7 @@ export default function Overlay({ fetchTable, setShowInputOverlay }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white p-16 rounded-md relative">
         <div className="flex flex-col md:flex-row gap-5">
-          <div className="">
+          <div className="md:border-r-2 pr-4">
             <button
               className="absolute top-4 right-4 text-gray-800 hover:text-gray-900 rounded-full p-1 hover:bg-slate-200"
               onClick={handleOverlayClose}
@@ -210,12 +217,39 @@ export default function Overlay({ fetchTable, setShowInputOverlay }) {
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold">Dataset Configuration</h2>
             </div>
-            <div className="w-72">Records: {datasetMetadata?.records}</div>
-            <div>Pagination:</div>
-            <div>Limit: {datasetMetadata?.limit}</div>
-            <div>Offset: {datasetMetadata?.offset}</div>
-            <div>select visibile columns</div>
-            <div>filter here</div>
+            <div className="mb-4">
+              <div className="w-72">{datasetMetadata?.label}</div>
+              <div className="w-72">
+                Number of Records: {datasetMetadata?.records}
+              </div>
+              <div className="w-72">
+                Number of Columns: {datasetMetadata?.columns.length}
+              </div>
+            </div>
+            <div>
+              <div>
+                <label
+                  htmlFor="rowsPerPage"
+                  className="block text-gray-700 font-bold mb-2"
+                >
+                  Rows Per Page:
+                </label>
+                <div className="mb-4 flex items-center gap-4">
+                  <input
+                    type="number"
+                    id="rowsPerPage"
+                    className="shadow appearance-none border rounded w-24 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    value={rowsPerPage}
+                    onChange={handleRowsPerPageChange}
+                  />
+                  <div className="py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    {`Number of Pages:   
+                  ${Math.ceil(datasetMetadata?.records / rowsPerPage)}`}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div>Select Visibile Columns</div>
           </div>
         </div>
         <div className="flex justify-between items-center">

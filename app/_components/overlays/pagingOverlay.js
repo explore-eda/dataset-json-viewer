@@ -26,7 +26,7 @@ export default function PagingOverlay({
 
   useEffect(() => {
     if (!tab || tab?.type === "library") {
-      errorToast("Tools Not Available for Current Table");
+      errorToast("Please Select a Valid Table");
       setShowOverlay(false);
     }
   }, []);
