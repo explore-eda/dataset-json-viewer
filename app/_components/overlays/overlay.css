@@ -1,0 +1,8 @@
+.input-field {
+    border: 1px solid #ccc; /* Default border */
+    box-sizing: border-box; 
+  }
+  
+  .input-field.error {
+    border-color: red; /* Highlight with red border on error */
+  }

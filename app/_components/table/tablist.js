@@ -1,5 +1,5 @@
 import React from "react";
-import { useTabStore, useDataStore } from "../../_utils/zustand/tablestore";
+import { useDataStore } from "../../_utils/zustand/tablestore";
 
 export default function TabList({tabs, currentTab, setCurrentTab, removeTab}) {
   const { setApplicationStatus } = useDataStore();

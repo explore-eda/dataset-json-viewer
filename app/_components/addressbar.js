@@ -1,12 +1,8 @@
 import React, { useState, useRef } from "react";
-import { useTabStore } from "../_utils/zustand/tablestore";
 
-export default function AddressBar({handleOpenAPIOverlay, handleFileOpen }) {
+export default function AddressBar({handleOpenAPIOverlay, handleFileOpen, addressBarText }) {
   const [selectedOption, setSelectedOption] = useState("");
   const fileInputRef = useRef(null);
-
-  const { tabs, currentTab } = useTabStore();
-
 
 
   const handleButtonClick = () => {
@@ -44,7 +40,7 @@ export default function AddressBar({handleOpenAPIOverlay, handleFileOpen }) {
         onChange={handleOptionChange}
       >
 
-      <option value="" disabled >{tabs[currentTab]?.dataSource}</option>
+      <option value="" disabled >{addressBarText}</option>
       <hr className="my-1 border-gray-400 mb-2" />
       <option value="1">Make API Request</option>
       <option value="2">Open Local File</option>

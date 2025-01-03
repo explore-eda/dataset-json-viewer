@@ -8,16 +8,25 @@ import {
   FolderOpenIcon,
   PencilIcon,
   CloudArrowDownIcon,
+  Bars3Icon,
+  BarsArrowUpIcon,
+  BookOpenIcon,
+  ArrowsUpDownIcon
 } from "@heroicons/react/16/solid";
 
-export function FileMenu({ handleOpenAPIOverlay, handleFileOpen, clearFunction, handleDownload }) {
+export function FileMenu({
+  handleOpenAPIOverlay,
+  handleFileOpen,
+  clearFunction,
+  handleDownload,
+}) {
   const menuButtonRef = useRef(null);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     handleFileOpen(file);
     menuButtonRef.current.click();
-    event.target.value = ''; 
+    event.target.value = "";
   };
 
   return (
@@ -80,7 +89,7 @@ const FileUploadMenuItem = ({ onFileChange }) => {
   const handleFileChange = (event) => {
     console.log("FileUploadMenuItem: File changed", event.target.files[0]);
     onFileChange(event);
-    event.target.value = ''; 
+    event.target.value = "";
   };
 
   return (
@@ -103,7 +112,12 @@ const FileUploadMenuItem = ({ onFileChange }) => {
   );
 };
 
-export function Tools() {
+export function Tools({
+  pagingFunction,
+  columnFunction,
+  rowFunction,
+  sortFunction}
+) {
   return (
     <Menu>
       <MenuButton className="inline-flex items-center gap-2 rounded-md py-1.5 px-3 focus:outline-none data-[hover]:bg-gray-100 data-[open]:bg-gray-100 data-[focus]:outline-1 data-[focus]:outline-gray-100">
@@ -116,9 +130,39 @@ export function Tools() {
         className="w-auto rounded-md border shadow-lg border-black/5 bg-gray-100 text-sm/6 text-black transition duration-100 ease-out [--anchor-gap:var(--spacing-1)] focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0"
       >
         <MenuItem>
-          <button className="group flex w-32 items-center gap-2 py-1.5 px-3 data-[focus]:bg-black/10">
-            <PencilIcon className="size-4 fill-black/30" />
-            Edit
+          <button
+            onClick={columnFunction}
+            className="group flex w-40 items-center gap-2 py-1.5 px-3 data-[focus]:bg-black/10"
+          >
+            <BarsArrowUpIcon className="size-4 fill-black/30" />
+            Column Options
+          </button>
+        </MenuItem>
+        <MenuItem>
+          <button
+            onClick={rowFunction}
+            className="group flex w-40 items-center gap-2 py-1.5 px-3 data-[focus]:bg-black/10"
+          >
+            <Bars3Icon className="size-4 fill-black/30" />
+            Row Options
+          </button>
+        </MenuItem>
+        <MenuItem>
+          <button
+            onClick={sortFunction}
+            className="group flex w-40 items-center gap-2 py-1.5 px-3 data-[focus]:bg-black/10"
+          >
+            <ArrowsUpDownIcon className="size-4 fill-black/30" />
+            Sort Options
+          </button>
+        </MenuItem>
+        <MenuItem>
+          <button
+            onClick={pagingFunction}
+            className="group flex w-40 items-center gap-2 py-1.5 px-3 data-[focus]:bg-black/10"
+          >
+            <BookOpenIcon className="size-4 fill-black/30" />
+            Paging Options
           </button>
         </MenuItem>
       </MenuItems>
@@ -139,25 +183,28 @@ export function Help() {
         className="w-auto rounded-md border shadow-lg border-black/5 bg-gray-100 text-sm/6 text-black transition duration-100 ease-out [--anchor-gap:var(--spacing-1)] focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0"
       >
         <MenuItem>
-          <button         onClick={() => window.open("", "_blank")}
-
-          className="group flex w-32 items-center gap-2 py-1.5 px-3 data-[focus]:bg-black/10">
+          <button
+            onClick={() => window.open("", "_blank")}
+            className="group flex w-32 items-center gap-2 py-1.5 px-3 data-[focus]:bg-black/10"
+          >
             <PencilIcon className="size-4 fill-black/30" />
             Github
           </button>
         </MenuItem>
         <MenuItem>
-          <button         onClick={() => window.open("", "_blank")}
-
-          className="group flex w-32 items-center gap-2 py-1.5 px-3 data-[focus]:bg-black/10">
+          <button
+            onClick={() => window.open("", "_blank")}
+            className="group flex w-32 items-center gap-2 py-1.5 px-3 data-[focus]:bg-black/10"
+          >
             <PencilIcon className="size-4 fill-black/30" />
             Contact
           </button>
         </MenuItem>
         <MenuItem>
-          <button         onClick={() => window.open("", "_blank")}
-
-          className="group flex w-32 items-center gap-2 py-1.5 px-3 data-[focus]:bg-black/10">
+          <button
+            onClick={() => window.open("", "_blank")}
+            className="group flex w-32 items-center gap-2 py-1.5 px-3 data-[focus]:bg-black/10"
+          >
             <PencilIcon className="size-4 fill-black/30" />
             Book Meeting
           </button>

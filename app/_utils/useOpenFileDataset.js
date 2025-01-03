@@ -7,11 +7,6 @@ const useOpenFileDatabase = () => {
     setErrorMessage,
   } = useDataStore();
 
-  const {
-    addTab,
-    setCurrentTab,
-  } = useTabStore();
-
   const openFileDataset = (file) => {
     setApplicationStatus("File Opening....");
 
@@ -20,8 +15,6 @@ const useOpenFileDatabase = () => {
     reader.onload = (e) => {
       try {
         const jsonData = JSON.parse(e.target.result);
-
-        console.log(jsonData);
 
         addTab(file.name, jsonData, "C:"+file.name, "dataset", "local");
         setCurrentTab(file.name);

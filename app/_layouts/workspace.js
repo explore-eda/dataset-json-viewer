@@ -1,12 +1,11 @@
 import React from "react";
 import "./workspace.css";
-import LimitInput from "../_components/table/limitInput";
 import Table from "../_components/table/table";
 import LibraryView from "../_components/table/libraryview";
 import { useEffect, useRef } from "react";
 import { useDataStore } from "../_utils/zustand/tablestore";
 
-const WorkSpace = ({tab, handleDatasetFromLibrary, setDataset}) => {
+const WorkSpace = ({tab, handleDatasetFromLibrary, setDataset, updateDisplayApi}) => {
   const { setErrorMessage, setApplicationStatus } = useDataStore();
   const tableType = tab?.type;
 
@@ -14,7 +13,7 @@ const WorkSpace = ({tab, handleDatasetFromLibrary, setDataset}) => {
     if(!(tab?.type === "library")) {
       fetchReloadDataset();
     }
-  }, [tab?.limit, tab?.page, tab?.sortModel, tab?.filteringActive, tab?.filter]);
+  }, [tab?.limit, tab?.page, tab?.sortFilters, tab?.rowQuery]);
 
   const abortControllerRef = useRef(new AbortController());
 
@@ -30,12 +29,12 @@ const WorkSpace = ({tab, handleDatasetFromLibrary, setDataset}) => {
 
     let queryString = "";
   
-    if (tab.filteringActive) {
-      queryString += `filter=${tab.filter}&`;
+    if (tab.rowQuery) {
+      queryString += `filter=${tab.rowQuery}&`;
     }
   
-    if (tab.sortModel.length > 0) {
-      const sortParams = tab.sortModel.map(sort => `${sort.colId}:${sort.sort}`).join(',');
+    if (tab.sortFilters.length > 0) {
+      const sortParams = tab.sortFilters.map(sort => `${sort}`).join(',');
       queryString += `sort=${sortParams}&`; 
     }
   
@@ -50,18 +49,22 @@ const WorkSpace = ({tab, handleDatasetFromLibrary, setDataset}) => {
     abortControllerRef.current = new AbortController();
 
     const requestId = Date.now();
+
+    console.log("request", request);
   
     setApplicationStatus(`${requestId}: New API Request: ${queryString}`);
     fetch(request, { signal: abortControllerRef.current.signal }) 
       .then((response) => {
         if (!response.ok) {
-          setErrorMessage("Network response was not ok");
+          throw new Error("Network response was not ok");
         }
         return response.json();
       })
       .then((data) => {
+        console.log("data", data);
         setApplicationStatus(`${requestId}: Api Request Was Successful! `);
         setDataset(tab.datasetOID, data);
+        updateDisplayApi(tab.datasetOID, request);
         return true;
       })
       .catch((error) => {
@@ -75,8 +78,6 @@ const WorkSpace = ({tab, handleDatasetFromLibrary, setDataset}) => {
         return false;
       });
   };
-
-  console.log("tableType", tab);
 
   if(tableType === "library") {
     return (

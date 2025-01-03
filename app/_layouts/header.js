@@ -9,6 +9,10 @@ export default function Header({
   handleDownload,
   clearFunction,
   addressBarText,
+  pagingFunction,
+  columnFunction,
+  rowFunction,
+  sortFunction,
 }) {
   return (
     <header className="flex bg-custom-beige flex-col w-full text-lg">
@@ -23,7 +27,12 @@ export default function Header({
             handleDownload={handleDownload}
             clearFunction={clearFunction}
           />
-          <Tools />
+          <Tools 
+            pagingFunction={pagingFunction}
+            columnFunction={columnFunction}
+            rowFunction={rowFunction}
+            sortFunction={sortFunction}
+          />
           <Window />
           <Help />
         </div>

@@ -1,15 +1,15 @@
 export default function Table ({tab}) {
 
+  if(!tab){
+    return null;
+  }
+
  const dataset = tab.dataset;
   if(!dataset) return null;
 
-  const page = tab.page;
-  const limit = tab.limit;
-  const totalPages = tab.totalPages;
-
   const rowNumbers = [];
-  for (let i = 0; i < limit; i++) {
-    rowNumbers.push(page * limit + i + 1);
+  for (let i = 0; i < tab.limit; i++) {
+    rowNumbers.push(tab.page * tab.limit + i + 1);
   }
 
 const processedRows = dataset.rows.map((row, rowIndex) => {
@@ -20,7 +20,7 @@ const processedRows = dataset.rows.map((row, rowIndex) => {
   return { ...lowerCaseRow, rowNumber: rowNumbers[rowIndex] };
 });
 
-const processedColumns = dataset.columns.map(column => ({
+const processedColumns = tab.visibleColumns.map(column => ({
   ...column,
   name: column.name.toLowerCase()
 }));
@@ -31,7 +31,7 @@ const processedColumns = dataset.columns.map(column => ({
   };
 
   return (
-    <table className="bg-white">
+    <table className="bg-white mb-20 h-full">
       <thead>
         <tr>
           <th key="rowNumber">#</th>

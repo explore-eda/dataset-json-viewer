@@ -4,8 +4,6 @@ const PageInput = ({tab, setPage}) => {
     setPage(tab.tabID, page);
   }
 
-  console.log("tab", tab);
-
   if (tab?.totalPages >= 0 && Number.isInteger(tab?.totalPages)) {
     return (
       <div>
