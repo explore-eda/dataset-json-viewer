@@ -120,17 +120,14 @@ export default function Home() {
   };
 
   const setPage = (tabName, page) => {
+    const newPage = Math.min(page, tabs[tabName]?.totalPages - 1); 
     setTabs((prevTabs) => ({
       ...prevTabs,
       [tabName]: {
         ...prevTabs[tabName],
-        page: page,
+        page: newPage,
       },
     }));
-
-    if (tabs[tabName].page > tabs[tabName].totalPages - 1) {
-      setPage(tabs[tabName]?.tabID, tabs[tabName]?.totalPages - 1);
-    }
   };
 
   const updateSortFilters = (tabName, sortFilters) => {
@@ -304,6 +301,7 @@ export default function Home() {
   const handleClear = () => {
     setTabs({});
     setCurrentTab(null);
+    setApplicationStatus("Cleared Workspace");
   };
 
   const [showPagingOverlay, setShowPagingOverlay] = useState(false);

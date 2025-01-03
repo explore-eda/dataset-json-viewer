@@ -82,7 +82,7 @@ const WorkSpace = ({tab, handleDatasetFromLibrary, setDataset, updateDisplayApi}
   if(tableType === "library") {
     return (
       <main className="h-full w-full shadow-inner overflow-hidden">
-        <div className="px-5 overflow-auto h-full">
+        <div className="h-full px-5 overflow-auto">
           <LibraryView tab={tab} handleDatasetFromLibrary={handleDatasetFromLibrary}/>
         </div>
       </main>
@@ -92,7 +92,7 @@ const WorkSpace = ({tab, handleDatasetFromLibrary, setDataset, updateDisplayApi}
   if(tableType === "dataset") {
     return (
       <main className="h-full w-full shadow-inner overflow-hidden">
-        <div className="px-5 overflow-auto h-full">
+        <div className="h-full px-5 overflow-auto">
           <Table tab={tab} />
         </div>
       </main>

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { XMarkIcon } from "@heroicons/react/24/solid";
+import 'animate.css';
 
 export default function Overlay({ fetchTable, setShowInputOverlay }) {
   const [url, setUrl] = useState("");
@@ -101,6 +102,7 @@ export default function Overlay({ fetchTable, setShowInputOverlay }) {
 
   const handleDatasetChange = (e) => {
     const selectedDataset = e.target.value;
+    setDatasetMetadata(null);
     setSelectedDataset(selectedDataset);
     setNewApiAddress(
       url + "/studies/" + selectedStudy + "/datasets/" + selectedDataset
@@ -138,10 +140,11 @@ export default function Overlay({ fetchTable, setShowInputOverlay }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="fixed inset-0 z-50 bg-black bg-opacity-50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center  animate__animated animate__fadeInTopLeft">
       <div className="bg-white p-16 rounded-md relative">
         <div className="flex flex-col md:flex-row gap-5">
-          <div className={`${datasetMetadata ? "md:border-r-2 md:pr-4" : ""}`}>
+          <div className={`${datasetMetadata ? "z-50 md:border-r-2 md:pr-4 bg-white" : ""}`}>
             <button
               className="absolute top-4 right-4 text-gray-800 hover:text-gray-900 rounded-full p-1 hover:bg-slate-200"
               onClick={handleOverlayClose}
@@ -213,7 +216,7 @@ export default function Overlay({ fetchTable, setShowInputOverlay }) {
               </div>
             </div>
           </div>
-          <div className={` ${datasetMetadata ? "block" : "hidden"}`}>
+          <div className={` ${datasetMetadata ? "z-20 block animate__animated animate__slideInLeft" : "hidden"}`}>
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold">Dataset Configuration</h2>
             </div>
@@ -223,7 +226,7 @@ export default function Overlay({ fetchTable, setShowInputOverlay }) {
                 Number of Records: {datasetMetadata?.records}
               </div>
               <div className="w-72">
-                Number of Columns: {datasetMetadata?.columns.length}
+                Number of Columns: {datasetMetadata?.columns?.length}
               </div>
             </div>
             <div>
@@ -272,6 +275,7 @@ export default function Overlay({ fetchTable, setShowInputOverlay }) {
           </button>
         </div>
       </div>
+    </div>
     </div>
   );
 }
