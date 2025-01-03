@@ -10,6 +10,13 @@ export default function PagingOverlay({
   const [errorMessage, setErrorMessage] = useState("");
   const [limit, setLimit] = useState(tab?.limit || 10);
 
+  const handleChange = (e) => {
+    if(isNaN(e.target.value) || e.target.value <= 0) {
+      return;
+    }
+    setLimit(e.target.value);
+  }
+
   const handleOverlayClose = () => {
     setShowOverlay(false);
   };
@@ -56,7 +63,7 @@ export default function PagingOverlay({
                 errorMessage ? "border-red-500" : ""
               }`}
               value={limit}
-              onChange={(e) => setLimit(e.target.value)}
+              onChange={(e) => handleChange(e)}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   handleNewUrl(e.target.value);

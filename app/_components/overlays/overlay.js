@@ -141,7 +141,7 @@ export default function Overlay({ fetchTable, setShowInputOverlay }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white p-16 rounded-md relative">
         <div className="flex flex-col md:flex-row gap-5">
-          <div className="md:border-r-2 pr-4">
+          <div className={`${datasetMetadata ? "md:border-r-2 md:pr-4" : ""}`}>
             <button
               className="absolute top-4 right-4 text-gray-800 hover:text-gray-900 rounded-full p-1 hover:bg-slate-200"
               onClick={handleOverlayClose}
