@@ -11,6 +11,7 @@ export default {
         background: "var(--background)",
         foreground: "var(--foreground)",
         'custom-beige': '#e0d4cc',
+        'custom-beige-dark': '#d3c6be',
         'custom-blue': '#0c2470',
       },
     },

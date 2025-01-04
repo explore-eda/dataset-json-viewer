@@ -297,6 +297,7 @@ export default function Home() {
           currentTab={currentTab}
           setCurrentTab={setCurrentTab}
           removeTab={removeTab}
+          overlayFunction={() => setShowAPIURLInputOverlay(true)}
         />
         <WorkSpace
           tab={tabs[currentTab]}
