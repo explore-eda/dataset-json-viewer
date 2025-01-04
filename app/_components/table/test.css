@@ -2,3 +2,34 @@
     background-color: #007bff; /* Example: Blue background */
     color: white;
   }
+
+  .wiggle-left {
+    transition: transform 0.3s ease-in-out; /* Add a transition */
+  }
+  
+  .wiggle-left:hover {
+    transform: translateX(-5px); /* Example transformation */
+  }
+
+  .wiggle-left:hover,
+.wiggle-left:active {
+  animation: wiggle-left 0.3s ease-in-out;
+}
+
+  @keyframes wiggle-left {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(-3px); }
+  }
+  
+  @keyframes wiggle-right {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(3px); }
+  }
+  
+  .animate-wiggle-left {
+    animation: wiggle-left 1s ease-in-out infinite;
+  }
+  
+  .animate-wiggle-right {
+    animation: wiggle-right 1s ease-in-out infinite;
+  }

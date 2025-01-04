@@ -18,9 +18,7 @@ export default class Tab {
     this.page = 0;
     this.total = dataset.pagination?.total ?? dataset.rows?.length ?? 0;
     this.limit = newLimit ?? 10;
-    this.totalPages = dataset.pagination
-      ? Math.ceil(dataset.pagination.total / this.limit)
-      : 0;
+    this.totalPages = Math.ceil(this.total / this.limit);
   }
 
   setDataset(newDataset) {

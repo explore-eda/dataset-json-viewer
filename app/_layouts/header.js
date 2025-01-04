@@ -16,8 +16,6 @@ export default function Header({
   rowFunction,
   sortFunction,
 }) {
-  console.log(logo);
-
   return (
     <header className="flex bg-custom-beige flex-col w-full text-lg">
       <div className="bg-custom-blue w-full py-2 text-sm font-bold text-white text-center">

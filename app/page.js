@@ -14,19 +14,31 @@ import "./globals.css";
 import { ToastContainer, toast, Bounce } from "react-toastify";
 import { useDataStore } from "./_utils/zustand/tablestore";
 import TabList from "./_components/table/tablist";
-import Tab from './_utils/tab';
-
+import Tab from "./_utils/tab";
 
 export default function Home() {
-
-  const [tabs, setTabs] = useState({});
+  const [tabs, setTabs] = useState([]);
   const [currentTab, setCurrentTab] = useState("");
 
-  const addTab = (datasetName, dataset, dataSource, dataType, sourceType, newLimit) => {
-    const newTab = new Tab(datasetName, dataset, dataSource, dataType, sourceType, newLimit); 
+  const addTab = (
+    datasetName,
+    dataset,
+    dataSource,
+    dataType,
+    sourceType,
+    newLimit
+  ) => {
+    const newTab = new Tab(
+      datasetName,
+      dataset,
+      dataSource,
+      dataType,
+      sourceType,
+      newLimit
+    );
     setTabs((prevTabs) => ({
       ...prevTabs,
-      [newTab.tabUUID]: newTab, 
+      [newTab.tabUUID]: newTab,
     }));
 
     return newTab.tabUUID;
@@ -41,7 +53,6 @@ export default function Home() {
       if (currentTab === tabUUID) {
         const tabKeys = Object.keys(newTabs);
         newCurrentTab = tabKeys[tabKeys.length - 1] || null;
-        console.log("newCurrentTab", newCurrentTab);
         setCurrentTab(newCurrentTab);
       }
 
@@ -54,21 +65,20 @@ export default function Home() {
   };
 
   const updateVisibleColumns = (newColumns) => {
-    console.log("currtab", tabs[currentTab])
     tabs[currentTab].setVisibleColumns(newColumns);
-  }
+  };
 
   const updateUseLabels = (useLabels) => {
     tabs[currentTab].updateUseLabels(useLabels);
-  }
+  };
 
   const updateDisplayApi = (api) => {
     tabs[currentTab].updateDisplayApi(api);
-  }
+  };
 
   const updateRowQuery = (query, config) => {
     tabs[currentTab].updateRowQuery(query, config);
-  }
+  };
 
   const setPage = (page) => {
     tabs[currentTab].setPage(page);
@@ -134,7 +144,13 @@ export default function Home() {
           setApplicationStatus(`[${selectedData}] Successfully fetched table `);
           return true;
         } else {
-          const tabUUID = addTab(selectedStudy, data, request, "library", "api");
+          const tabUUID = addTab(
+            selectedStudy,
+            data,
+            request,
+            "library",
+            "api"
+          );
           setCurrentTab(tabUUID);
 
           setApplicationStatus(
@@ -159,7 +175,13 @@ export default function Home() {
     reader.onload = (e) => {
       try {
         const jsonData = JSON.parse(e.target.result);
-        const tabUUID = addTab(file.name, jsonData, "C:" + file.name, "dataset", "local");
+        const tabUUID = addTab(
+          file.name,
+          jsonData,
+          "C:" + file.name,
+          "dataset",
+          "local"
+        );
         setCurrentTab(tabUUID);
 
         setApplicationStatus("Opened File");

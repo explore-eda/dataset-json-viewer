@@ -14,7 +14,7 @@ export default function Footer({ tab, setPage }) {
   return (
     <footer className="bg-custom-beige w-full h-20 flex sm:px-0 items-center justify-between">
       <div
-        className="overflow-y-auto mx-5  max-h-16 mt-2 w-96 hover:bg-custom-beige-dark hover:border-x hover:border-t hover:border-gray-500 cursor-pointer"
+        className="overflow-y-auto mx-5  max-h-16 mt-2 w-96 border border-custom-beige hover:bg-custom-beige-dark hover:border-x hover:border-t hover:border-gray-500 cursor-pointer"
         onClick={handleExpandClick}
       >
         <div className="flex justify-between items-center content-center w-full">

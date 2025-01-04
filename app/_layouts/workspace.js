@@ -13,6 +13,7 @@ const WorkSpace = ({tab, handleDatasetFromLibrary, setDataset, updateDisplayApi}
     if(!(tab?.type === "library") && !(tab?.sourceType === "local")) {
       fetchReloadDataset();
     }
+    console.log("new tab", tab);
   }, [tab?.limit, tab?.page, tab?.sortFilters, tab?.rowQuery]);
 
   const abortControllerRef = useRef(new AbortController());
@@ -49,8 +50,6 @@ const WorkSpace = ({tab, handleDatasetFromLibrary, setDataset, updateDisplayApi}
     abortControllerRef.current = new AbortController();
 
     const requestId = Date.now();
-
-    console.log("request", request);
   
     setApplicationStatus(`${requestId}: New API Request: ${queryString}`);
     fetch(request, { signal: abortControllerRef.current.signal }) 
@@ -61,7 +60,6 @@ const WorkSpace = ({tab, handleDatasetFromLibrary, setDataset, updateDisplayApi}
         return response.json();
       })
       .then((data) => {
-        console.log("data", data);
         setApplicationStatus(`${requestId}: Api Request Was Successful! `);
         setDataset(tab.datasetOID, data);
         updateDisplayApi(tab.datasetOID, request);
