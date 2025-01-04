@@ -135,7 +135,7 @@ export function Tools({
             className="group flex w-40 items-center gap-2 py-1.5 px-3 data-[focus]:bg-black/10"
           >
             <BarsArrowUpIcon className="size-4 fill-black/30" />
-            Column Options
+            Column
           </button>
         </MenuItem>
         <MenuItem>
@@ -144,7 +144,7 @@ export function Tools({
             className="group flex w-40 items-center gap-2 py-1.5 px-3 data-[focus]:bg-black/10"
           >
             <Bars3Icon className="size-4 fill-black/30" />
-            Row Options
+            Row
           </button>
         </MenuItem>
         <MenuItem>
@@ -153,7 +153,7 @@ export function Tools({
             className="group flex w-40 items-center gap-2 py-1.5 px-3 data-[focus]:bg-black/10"
           >
             <ArrowsUpDownIcon className="size-4 fill-black/30" />
-            Sort Options
+            Sort
           </button>
         </MenuItem>
         <MenuItem>
@@ -162,7 +162,7 @@ export function Tools({
             className="group flex w-40 items-center gap-2 py-1.5 px-3 data-[focus]:bg-black/10"
           >
             <BookOpenIcon className="size-4 fill-black/30" />
-            Paging Options
+            Paging
           </button>
         </MenuItem>
       </MenuItems>

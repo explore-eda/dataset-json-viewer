@@ -151,13 +151,13 @@ export default function Overlay({ fetchTable, setShowInputOverlay }) {
             >
               <XMarkIcon className="h-6 w-6" />
             </button>
-            <h2 className="text-xl font-bold mb-4">Data Source</h2>
+            <h2 className="text-xl font-bold mb-4">API URL Generator</h2>
             <div className="mb-4 w-full">
               <label
                 htmlFor="apiAddress"
                 className="block text-gray-700 font-bold mb-2"
               >
-                Url:
+                Sponsor Domain:
               </label>
               <input
                 type="text"
