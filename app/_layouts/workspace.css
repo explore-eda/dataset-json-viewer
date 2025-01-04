@@ -84,10 +84,6 @@ button {
   display: none;
 }
 
-.slide-up {
-  animation: slideUp 0.5s ease-out forwards; /* Adjust duration and easing as needed */
-}
-
 @keyframes slideUp {
   from {
     opacity: 0;

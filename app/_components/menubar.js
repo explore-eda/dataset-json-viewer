@@ -214,27 +214,4 @@ export function Help() {
   );
 }
 
-export function Window() {
-  return (
-    <Menu>
-      <MenuButton className="inline-flex items-center gap-2 rounded-md py-1.5 px-3 focus:outline-none data-[hover]:bg-gray-100 data-[open]:bg-gray-100 data-[focus]:outline-1 data-[focus]:outline-gray-100">
-        Window
-        <ChevronDownIcon className="size-4 fill-black/60" />
-      </MenuButton>
-      <MenuItems
-        transition
-        anchor="bottom-start"
-        className="w-auto rounded-md border shadow-lg border-black/5 bg-gray-100 text-sm/6 text-black transition duration-100 ease-out [--anchor-gap:var(--spacing-1)] focus:outline-none data-[closed]:scale-95 data-[closed]:opacity-0"
-      >
-        <MenuItem>
-          <button className="group flex w-32 items-center gap-2 py-1.5 px-3 data-[focus]:bg-black/10">
-            <PencilIcon className="size-4 fill-black/30" />
-            Edit
-          </button>
-        </MenuItem>
-      </MenuItems>
-    </Menu>
-  );
-}
-
 export default FileMenu;

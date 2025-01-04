@@ -15,6 +15,9 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "EDA JSON Viewer",
   description: "© EDA Clinical",
+  icons: {
+    icon: '/public/favicon.ico', // /public path
+  },
 };
 
 export default function RootLayout({ children }) {
@@ -23,6 +26,7 @@ export default function RootLayout({ children }) {
     <html lang="en" suppressHydrationWarning> 
       <head>
         <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" /> 
+        <link rel="shortcut icon" href="/public/assets/favicon.ico" type="image/ico"/>
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}

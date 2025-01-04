@@ -141,7 +141,7 @@ export default function Overlay({ fetchTable, setShowInputOverlay }) {
 
   return (
     <div className="fixed inset-0 z-50 bg-black bg-opacity-50">
-    <div className="fixed inset-0 z-50 flex items-center justify-center  animate__animated animate__fadeInTopLeft">
+    <div className="fixed inset-0 z-50 flex items-center justify-center  animate__animated animate__fadeInDown">
       <div className="bg-white p-16 rounded-md relative">
         <div className="flex flex-col md:flex-row gap-5">
           <div className={`${datasetMetadata ? "z-50 md:border-r-2 md:pr-4 bg-white" : ""}`}>

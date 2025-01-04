@@ -1,6 +1,9 @@
 import React from "react";
-import { FileMenu, Tools, Help, Window } from "../_components/menubar";
+import { FileMenu, Tools, Help } from "../_components/menubar";
 import AddressBar from "../_components/addressbar";
+import logo from "/public/assets/EDA SVG logo.svg";
+import Image from "next/image";
+import logo2 from "/public/assets/EDA_clinical_logo_nobg.png";
 /* e8e0de */
 /* F9D74D */
 export default function Header({
@@ -14,11 +17,22 @@ export default function Header({
   rowFunction,
   sortFunction,
 }) {
+  console.log(logo);
+
   return (
     <header className="flex bg-custom-beige flex-col w-full text-lg">
-      <div className="bg-custom-blue w-full py-2"></div>
+      <div className="bg-custom-blue w-full py-2 font-bold text-white text-center">
+        <em>Dataset-JSON Viewer</em>
+      </div>
       <div className="flex w-full flex-col items-center center content-center md:flex-row md:items-baseline md:justify-between mx-auto md:mx-0">
-        <div className="flex md:hidden font-bold mt-2">EDA JSON Viewer</div>
+        <div className="flex md:hidden font-bold mt-2">
+        <a href="https://edaclinical.com" target="_blank" rel="noopener noreferrer">
+
+        <div className="h-auto w-20">
+            <Image src={logo2} alt="EDA Logo" layout="intrinsic" />
+          </div>
+        </a>
+        </div>
 
         <div className="flex flex-row gap-2 mb-2 md:mt-1 md:mx-8">
           <FileMenu
@@ -27,17 +41,21 @@ export default function Header({
             handleDownload={handleDownload}
             clearFunction={clearFunction}
           />
-          <Tools 
+          <Tools
             pagingFunction={pagingFunction}
             columnFunction={columnFunction}
             rowFunction={rowFunction}
             sortFunction={sortFunction}
           />
-          <Window />
           <Help />
         </div>
-        <div className="flex max-md:hidden md:block font-bold ml-2 md:mx-8">
-          EDA JSON Viewer
+        <div className="self-end flex max-md:hidden md:block font-bold ml-2 md:mx-8">
+        <a href="https://edaclinical.com" target="_blank" rel="noopener noreferrer">
+
+          <div className="h-auto w-20">
+            <Image src={logo2} alt="EDA Logo" layout="intrinsic" />
+          </div>
+          </a>
         </div>
       </div>
 
