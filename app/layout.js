@@ -26,7 +26,7 @@ export default function RootLayout({ children }) {
     <html lang="en" suppressHydrationWarning> 
       <head>
         <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" /> 
-        <link rel="shortcut icon" href="/public/assets/favicon.ico" type="image/ico"/>
+        <link rel="shortcut icon" href="/public/favicon.ico" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
