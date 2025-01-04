@@ -10,7 +10,7 @@ const WorkSpace = ({tab, handleDatasetFromLibrary, setDataset, updateDisplayApi}
   const tableType = tab?.type;
 
   useEffect(() => {
-    if(!(tab?.type === "library")) {
+    if(!(tab?.type === "library") && !(tab?.sourceType === "local")) {
       fetchReloadDataset();
     }
   }, [tab?.limit, tab?.page, tab?.sortFilters, tab?.rowQuery]);

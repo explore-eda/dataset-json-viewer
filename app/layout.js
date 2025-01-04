@@ -16,7 +16,7 @@ export const metadata = {
   title: "EDA JSON Viewer",
   description: "© EDA Clinical",
   icons: {
-    icon: '/public/favicon.ico', // /public path
+    icon: '/public/favicon.ico',
   },
 };
 

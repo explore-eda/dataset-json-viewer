@@ -1,29 +1,33 @@
-export default function Table ({tab}) {
-
-  if(!tab){
+export default function Table({ tab }) {
+  if (!tab) {
     return null;
   }
 
- const dataset = tab.dataset;
-  if(!dataset) return null;
+  const dataset = tab.dataset;
+  if (!dataset) return null;
 
   const rowNumbers = [];
   for (let i = 0; i < tab.limit; i++) {
     rowNumbers.push(tab.page * tab.limit + i + 1);
   }
 
-const processedRows = dataset.rows.map((row, rowIndex) => {
-  const lowerCaseRow = {};
-  for (const key in row) {
-    lowerCaseRow[key.toLowerCase()] = row[key];
-  }
-  return { ...lowerCaseRow, rowNumber: rowNumbers[rowIndex] };
-});
+  const processedRows = dataset.rows.map((row, rowIndex) => {
+    const lowerCaseRow = {};
+    for (const key in row) {
+      lowerCaseRow[key.toLowerCase()] = row[key];
+    }
+    return { ...lowerCaseRow, rowNumber: rowNumbers[rowIndex] };
+  });
+  console.log("processedRows");
+  console.log(processedRows);
 
-const processedColumns = tab.visibleColumns.map(column => ({
-  ...column,
-  name: column.name.toLowerCase()
-}));
+  const processedColumns = tab.visibleColumns.map((column) => ({
+    ...column,
+    name: column.name.toLowerCase(),
+  }));
+
+  console.log("processedCols");
+  console.log(processedColumns);
 
   const handleHeaderClick = (columnIndex) => {
     // Implement your header click logic here (e.g., sorting)
@@ -56,11 +60,11 @@ const processedColumns = tab.visibleColumns.map(column => ({
           <tr key={rowIndex}>
             <td key="rowNumber">{row.rowNumber}</td>
             {processedColumns.map((col, colIndex) => (
-              <td key={colIndex}>{row[col.name] || "N/A"}</td>
+              <td key={colIndex}>{row[colIndex] || "N/A"}</td>
             ))}
           </tr>
         ))}
       </tbody>
     </table>
   );
-};
+}

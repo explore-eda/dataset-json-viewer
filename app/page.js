@@ -13,95 +13,35 @@ import { useState, useEffect } from "react";
 import "./globals.css";
 import { ToastContainer, toast, Bounce } from "react-toastify";
 import { useDataStore } from "./_utils/zustand/tablestore";
-import useOpenFileDataset from "./_utils/useOpenFileDataset";
 import TabList from "./_components/table/tablist";
+import Tab from './_utils/tab';
+
 
 export default function Home() {
-  const { openFileDataset } = useOpenFileDataset();
 
   const [tabs, setTabs] = useState({});
   const [currentTab, setCurrentTab] = useState("");
 
-  const addTab = (tabName, dataset, dataSource, dataType, sourceType) => {
+  const addTab = (datasetName, dataset, dataSource, dataType, sourceType, newLimit) => {
+    const newTab = new Tab(datasetName, dataset, dataSource, dataType, sourceType, newLimit); 
     setTabs((prevTabs) => ({
       ...prevTabs,
-      [tabName]: {
-        tabID: tabName,
-        dataSource: dataSource,
-        displayApi: dataSource,
-        datasetOID: tabName,
-        dataset: dataset,
-        type: dataType,
-        sourceType: sourceType,
-
-
-        sortFilters: [],
-        useLabels: false,
-        visibleColumns: dataset?.columns ?? [],
-        rowConfig: [],
-        rowQuery: "",
-
-        paginationActive: true,
-        page: 0,
-        total: dataset.pagination?.total ?? dataset.rows?.length ?? 0,
-        limit: dataset.pagination?.limit ?? dataset.rows?.limit ?? 10,
-        totalPages: dataset.pagination
-          ? Math.ceil(dataset.pagination.total / dataset.pagination.limit)
-          : 0,
-      },
+      [newTab.tabUUID]: newTab, 
     }));
+
+    return newTab.tabUUID;
   };
 
-  const updateVisibleColumns = (tabName, newColumns) => {
-    setTabs((prevTabs) => ({
-      ...prevTabs,
-      [tabName]: {
-        ...prevTabs[tabName],
-        visibleColumns: newColumns,
-      },
-    }));
-  }
-
-  const updateUseLabels = (tabName, useLabels) => {
-    setTabs((prevTabs) => ({
-      ...prevTabs,
-      [tabName]: {
-        ...prevTabs[tabName],
-        useLabels: useLabels,
-      },
-    }));
-  }
-
-  const updateDisplayApi = (tabName, api) => {
-    setTabs((prevTabs) => ({
-      ...prevTabs,
-      [tabName]: {
-        ...prevTabs[tabName],
-        displayApi: api,
-      },
-    }));
-  }
-
-  const updateRowQuery = (tabName, query, config) => {
-    setTabs((prevTabs) => ({
-      ...prevTabs,
-      [tabName]: {
-        ...prevTabs[tabName],
-        rowQuery: query,
-        rowConfig: config,
-      },
-    }));
-  };
-
-  const removeTab = (tabName) => {
+  const removeTab = (tabUUID) => {
     setTabs((prevTabs) => {
       const newTabs = { ...prevTabs };
-      delete newTabs[tabName];
+      delete newTabs[tabUUID];
 
       let newCurrentTab = currentTab;
-      if (currentTab === tabName) {
+      if (currentTab === tabUUID) {
         const tabKeys = Object.keys(newTabs);
         newCurrentTab = tabKeys[tabKeys.length - 1] || null;
+        console.log("newCurrentTab", newCurrentTab);
         setCurrentTab(newCurrentTab);
       }
 
@@ -109,46 +49,37 @@ export default function Home() {
     });
   };
 
-  const setDataset = (tabName, dataset) => {
-    setTabs((prevTabs) => ({
-      ...prevTabs,
-      [tabName]: {
-        ...prevTabs[tabName],
-        dataset: dataset,
-      },
-    }));
+  const setDataset = (dataset) => {
+    tabs[currentTab].setDataset(dataset);
   };
 
-  const setPage = (tabName, page) => {
-    const newPage = Math.min(page, tabs[tabName]?.totalPages - 1); 
-    setTabs((prevTabs) => ({
-      ...prevTabs,
-      [tabName]: {
-        ...prevTabs[tabName],
-        page: newPage,
-      },
-    }));
-  };
-
-  const updateSortFilters = (tabName, sortFilters) => {
-    setTabs((prevTabs) => ({
-      ...prevTabs,
-      [tabName]: {
-        ...prevTabs[tabName],
-        sortFilters: sortFilters,
-      },
-    }));
+  const updateVisibleColumns = (newColumns) => {
+    console.log("currtab", tabs[currentTab])
+    tabs[currentTab].setVisibleColumns(newColumns);
   }
 
-  const updateLimit = (tabName, newLimit) => {
-    setTabs((prevTabs) => ({
-      ...prevTabs,
-      [tabName]: {
-        ...prevTabs[tabName],
-        limit: newLimit,
-        totalPages: Math.ceil(tabs[tabName].total / newLimit),
-      },
-    }));
+  const updateUseLabels = (useLabels) => {
+    tabs[currentTab].updateUseLabels(useLabels);
+  }
+
+  const updateDisplayApi = (api) => {
+    tabs[currentTab].updateDisplayApi(api);
+  }
+
+  const updateRowQuery = (query, config) => {
+    tabs[currentTab].updateRowQuery(query, config);
+  }
+
+  const setPage = (page) => {
+    tabs[currentTab].setPage(page);
+  };
+
+  const updateSortFilters = (sortFilters) => {
+    tabs[currentTab].setSortFilters(sortFilters);
+  };
+
+  const updateLimit = (newLimit) => {
+    tabs[currentTab].setLimit(newLimit);
   };
 
   const { errorMessage, setApplicationStatus } = useDataStore();
@@ -197,14 +128,14 @@ export default function Home() {
       })
       .then((data) => {
         if (selectedData) {
-          addTab(selectedData, data, request, "dataset", "api");
-          setCurrentTab(selectedData);
+          const tabUUID = addTab(selectedData, data, request, "dataset", "api");
+          setCurrentTab(tabUUID);
 
           setApplicationStatus(`[${selectedData}] Successfully fetched table `);
           return true;
         } else {
-          addTab(selectedStudy, data, request, "library", "api");
-          setCurrentTab(selectedStudy);
+          const tabUUID = addTab(selectedStudy, data, request, "library", "api");
+          setCurrentTab(tabUUID);
 
           setApplicationStatus(
             `[${selectedStudy}] Successfully fetched table `
@@ -221,7 +152,28 @@ export default function Home() {
 
   // Handle File Open
   const handleFileOpen = (file) => {
-    openFileDataset(file);
+    setApplicationStatus("File Opening....");
+
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      try {
+        const jsonData = JSON.parse(e.target.result);
+        const tabUUID = addTab(file.name, jsonData, "C:" + file.name, "dataset", "local");
+        setCurrentTab(tabUUID);
+
+        setApplicationStatus("Opened File");
+      } catch (error) {
+        setErrorMessage(error.message);
+      }
+    };
+
+    reader.onerror = (error) => {
+      setApplicationStatus("Error Opening File");
+      setErrorMessage(error.message);
+    };
+
+    reader.readAsText(file);
   };
 
   const handleDownload = () => {
@@ -253,7 +205,7 @@ export default function Home() {
       const value = fetchDatasetFromLibrary(datasetOID);
 
       if (value) {
-        setCurrentTab(datasetOID);
+        setCurrentTab(value);
       }
     }
   };
@@ -284,11 +236,11 @@ export default function Home() {
             return false;
           }
           // This block only executes if response.ok was true
-          addTab(datasetOID, data, request, "dataset", "api");
+          const tabUUID = addTab(datasetOID, data, request, "dataset", "api");
           setApplicationStatus(
             `[${datasetOID}]: Successfully fetched dataset `
           );
-          return true;
+          return tabUUID;
         })
         .catch((error) => {
           setErrorMessage(`[${datasetOID}]: ` + error.message);
@@ -309,23 +261,22 @@ export default function Home() {
   const [showRowOverlay, setShowRowOverlay] = useState(false);
   const [showSortOverlay, setShowSortOverlay] = useState(false);
 
-
   const handlePagingUpdate = (newLimit) => {
-    updateLimit(tabs[currentTab].tabID, newLimit);
-  }
+    updateLimit(newLimit);
+  };
 
   const handleColumnUpdate = (newColumns, useLabels) => {
-    updateVisibleColumns(tabs[currentTab].tabID, newColumns);
-    updateUseLabels(tabs[currentTab].tabID, useLabels);
-  }
+    updateVisibleColumns(newColumns);
+    updateUseLabels(useLabels);
+  };
 
   const handleSortUpdate = (sortFilters) => {
-    updateSortFilters(tabs[currentTab].tabID, sortFilters);
-  }
+    updateSortFilters(sortFilters);
+  };
 
   const handleRowUpdate = (query, config) => {
-    updateRowQuery(tabs[currentTab].tabID, query, config);
-  }
+    updateRowQuery(query, config);
+  };
 
   return (
     <div className="flex flex-col h-screen">
@@ -363,13 +314,37 @@ export default function Home() {
         />
       )}
       {showPagingOverlay && (
-        <PagingOverlay setShowOverlay={setShowPagingOverlay} tab={tabs[currentTab]} errorToast={errorToast} handleUpdate={handlePagingUpdate} />
+        <PagingOverlay
+          setShowOverlay={setShowPagingOverlay}
+          tab={tabs[currentTab]}
+          errorToast={errorToast}
+          handleUpdate={handlePagingUpdate}
+        />
       )}
       {showColumnOverlay && (
-        <ColumnOverlay setShowOverlay={setShowColumnOverlay} tab={tabs[currentTab]} errorToast={errorToast} handleUpdate={handleColumnUpdate}/>
+        <ColumnOverlay
+          setShowOverlay={setShowColumnOverlay}
+          tab={tabs[currentTab]}
+          errorToast={errorToast}
+          handleUpdate={handleColumnUpdate}
+        />
       )}
-      {showRowOverlay && <RowOverlay setShowOverlay={setShowRowOverlay} tab={tabs[currentTab]} errorToast={errorToast} handleUpdate={handleRowUpdate}/>}
-      {showSortOverlay && <SortOverlay setShowOverlay={setShowSortOverlay} tab={tabs[currentTab]} errorToast={errorToast} handleUpdate={handleSortUpdate}/>}
+      {showRowOverlay && (
+        <RowOverlay
+          setShowOverlay={setShowRowOverlay}
+          tab={tabs[currentTab]}
+          errorToast={errorToast}
+          handleUpdate={handleRowUpdate}
+        />
+      )}
+      {showSortOverlay && (
+        <SortOverlay
+          setShowOverlay={setShowSortOverlay}
+          tab={tabs[currentTab]}
+          errorToast={errorToast}
+          handleUpdate={handleSortUpdate}
+        />
+      )}
       <ToastContainer
         stacked
         position="bottom-center"

@@ -16,8 +16,8 @@ const useOpenFileDatabase = () => {
       try {
         const jsonData = JSON.parse(e.target.result);
 
-        addTab(file.name, jsonData, "C:"+file.name, "dataset", "local");
-        setCurrentTab(file.name);
+        const tabUUID = addTab(file.name, jsonData, "C:"+file.name, "dataset", "local");
+        setCurrentTab(tabUUID);
 
         setApplicationStatus("Opened File");
       } catch (error) {

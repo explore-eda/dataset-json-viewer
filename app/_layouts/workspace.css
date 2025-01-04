@@ -83,14 +83,3 @@ button {
 .hidden {
   display: none;
 }
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px); /* Adjust initial position as needed */
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
