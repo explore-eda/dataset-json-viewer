@@ -14,45 +14,102 @@ import "./globals.css";
 import { ToastContainer, toast, Bounce } from "react-toastify";
 import { useDataStore } from "./_utils/zustand/tablestore";
 import TabList from "./_components/table/tablist";
-import Tab from "./_utils/tab";
 
 export default function Home() {
-  const [tabs, setTabs] = useState([]);
+  const [tabs, setTabs] = useState({});
   const [currentTab, setCurrentTab] = useState("");
 
   const addTab = (
-    datasetName,
+    tabName,
     dataset,
     dataSource,
     dataType,
     sourceType,
-    newLimit
+    defaultLimit
   ) => {
-    const newTab = new Tab(
-      datasetName,
-      dataset,
-      dataSource,
-      dataType,
-      sourceType,
-      newLimit
-    );
+    const tabUUID = Date.now();
     setTabs((prevTabs) => ({
       ...prevTabs,
-      [newTab.tabUUID]: newTab,
-    }));
+      [tabUUID]: {
+        tabUUID: tabUUID,
+        tabID: tabName,
+        dataSource: dataSource,
+        displayApi: dataSource,
+        datasetOID: tabName,
+        dataset: dataset,
+        type: dataType,
+        sourceType: sourceType,
 
-    return newTab.tabUUID;
+        sortFilters: [],
+        useLabels: false,
+        visibleColumns: dataset?.columns ?? [],
+        rowConfig: [],
+        rowQuery: "",
+
+        paginationActive: true,
+        page: 0,
+        total: dataset.pagination?.total ?? dataset.rows?.length ?? 0,
+        limit: defaultLimit ?? 10,
+        totalPages: Math.ceil(
+          (dataset.pagination?.total ?? dataset.rows?.length ?? 0) /
+            (defaultLimit ?? 10)
+        ),
+      },
+    }));
+    return tabUUID;
   };
 
-  const removeTab = (tabUUID) => {
+  const updateVisibleColumns = (tabName, newColumns) => {
+    setTabs((prevTabs) => ({
+      ...prevTabs,
+      [tabName]: {
+        ...prevTabs[tabName],
+        visibleColumns: newColumns,
+      },
+    }));
+  };
+
+  const updateUseLabels = (tabName, useLabels) => {
+    setTabs((prevTabs) => ({
+      ...prevTabs,
+      [tabName]: {
+        ...prevTabs[tabName],
+        useLabels: useLabels,
+      },
+    }));
+  };
+
+  const updateDisplayApi = (tabName, api) => {
+    setTabs((prevTabs) => ({
+      ...prevTabs,
+      [tabName]: {
+        ...prevTabs[tabName],
+        displayApi: api,
+      },
+    }));
+  };
+
+  const updateRowQuery = (tabName, query, config) => {
+    setTabs((prevTabs) => ({
+      ...prevTabs,
+      [tabName]: {
+        ...prevTabs[tabName],
+        rowQuery: query,
+        rowConfig: config,
+      },
+    }));
+  };
+
+  const removeTab = (tabName) => {
     setTabs((prevTabs) => {
       const newTabs = { ...prevTabs };
-      delete newTabs[tabUUID];
+      delete newTabs[tabName];
 
       let newCurrentTab = currentTab;
-      if (currentTab === tabUUID) {
+      if (currentTab === tabName) {
         const tabKeys = Object.keys(newTabs);
         newCurrentTab = tabKeys[tabKeys.length - 1] || null;
+        console.log("newCurrentTab", newCurrentTab);
         setCurrentTab(newCurrentTab);
       }
 
@@ -60,36 +117,49 @@ export default function Home() {
     });
   };
 
-  const setDataset = (dataset) => {
-    tabs[currentTab].setDataset(dataset);
+  const setDataset = (tabName, dataset) => {
+    setTabs((prevTabs) => ({
+      ...prevTabs,
+      [tabName]: {
+        ...prevTabs[tabName],
+        dataset: dataset,
+      },
+    }));
   };
 
-  const updateVisibleColumns = (newColumns) => {
-    tabs[currentTab].setVisibleColumns(newColumns);
+  const setPage = (tabName, page) => {
+    console.log("setPage", tabName, page);
+    const newPage = Math.min(page, tabs[tabName]?.totalPages - 1);
+    setTabs((prevTabs) => ({
+      ...prevTabs,
+      [tabName]: {
+        ...prevTabs[tabName],
+        page: newPage,
+      },
+    }));
   };
 
-  const updateUseLabels = (useLabels) => {
-    tabs[currentTab].updateUseLabels(useLabels);
+  const updateSortFilters = (tabName, sortFilters) => {
+    setTabs((prevTabs) => ({
+      ...prevTabs,
+      [tabName]: {
+        ...prevTabs[tabName],
+        sortFilters: sortFilters,
+      },
+    }));
   };
 
-  const updateDisplayApi = (api) => {
-    tabs[currentTab].updateDisplayApi(api);
-  };
-
-  const updateRowQuery = (query, config) => {
-    tabs[currentTab].updateRowQuery(query, config);
-  };
-
-  const setPage = (page) => {
-    tabs[currentTab].setPage(page);
-  };
-
-  const updateSortFilters = (sortFilters) => {
-    tabs[currentTab].setSortFilters(sortFilters);
-  };
-
-  const updateLimit = (newLimit) => {
-    tabs[currentTab].setLimit(newLimit);
+  const updateLimit = (tabName, newLimit) => {
+    const newTotalPages = Math.ceil(tabs[tabName].total / newLimit);
+    setTabs((prevTabs) => ({
+      ...prevTabs,
+      [tabName]: {
+        ...prevTabs[tabName],
+        limit: newLimit,
+        totalPages: newTotalPages,
+        page: Math.min(tabs[tabName].page, newTotalPages - 1),
+      },
+    }));
   };
 
   const { errorMessage, setApplicationStatus } = useDataStore();
@@ -120,7 +190,7 @@ export default function Home() {
   const fetchTable = (url, selectedStudy, selectedData) => {
     if (url === "" || selectedStudy == "") return;
     if (!navigator.onLine) {
-      setErrorMessage("No internet connection. Please connect and try again.");
+      errorToast("No internet connection. Please connect and try again.");
       return false;
     }
 
@@ -131,7 +201,7 @@ export default function Home() {
       .then((response) => {
         if (!response.ok) {
           setApplicationStatus(`[${selectedStudy}] Failed to fetch new table `);
-          setErrorMessage(response.status);
+          errorToast(response.status);
           return false;
         }
         return response.json();
@@ -161,7 +231,7 @@ export default function Home() {
       })
       .catch((error) => {
         setApplicationStatus("Failed to fetch table: " + request);
-        setErrorMessage(error.message);
+        errorToast(error.message);
         return false;
       });
   };
@@ -178,45 +248,42 @@ export default function Home() {
         const tabUUID = addTab(
           file.name,
           jsonData,
-          "C:" + file.name,
+          file.name,
           "dataset",
           "local"
         );
         setCurrentTab(tabUUID);
-
         setApplicationStatus("Opened File");
       } catch (error) {
-        setErrorMessage(error.message);
+        errorToast(error.message);
       }
     };
 
     reader.onerror = (error) => {
       setApplicationStatus("Error Opening File");
-      setErrorMessage(error.message);
+      errorToast(error.message);
     };
 
     reader.readAsText(file);
   };
 
   const handleDownload = () => {
-    /*
-    if (!dataset) {
-      setApplicationStatus("No data to download");
+    if (!currentTab) {
+      errorToast("No data to download");
       return;
     }
     const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
-      JSON.stringify(tab[currentTab].dataset)
+      JSON.stringify(tabs[currentTab].dataset)
     )}`;
     const link = document.createElement("a");
     link.href = jsonString;
-    if (apiURL) {
-      const urlParts = apiURL.split("/");
+    if (tabs[currentTab].sourceType === "api") {
+      const urlParts = tabs[currentTab].dataSource.split("/");
       link.download = urlParts[urlParts.length - 1];
     } else {
-      link.download = addressBarText;
+      link.download = tabs[currentTab].dataSource;
     }
-          link.click();
-    */
+    link.click();
   };
 
   const handleDatasetFromLibrary = (event, datasetOID) => {
@@ -237,7 +304,7 @@ export default function Home() {
       return true;
     } else {
       if (!navigator.onLine) {
-        setErrorMessage(
+        errorToast(
           "No internet connection. Please connect and try again."
         );
         return false;
@@ -265,7 +332,7 @@ export default function Home() {
           return tabUUID;
         })
         .catch((error) => {
-          setErrorMessage(`[${datasetOID}]: ` + error.message);
+          errorToast(`[${datasetOID}]: ` + error.message);
           setApplicationStatus(`[${datasetOID}]: ` + error.message);
           return false;
         });
@@ -284,21 +351,25 @@ export default function Home() {
   const [showSortOverlay, setShowSortOverlay] = useState(false);
 
   const handlePagingUpdate = (newLimit) => {
-    updateLimit(newLimit);
+    updateLimit(currentTab, newLimit);
   };
 
   const handleColumnUpdate = (newColumns, useLabels) => {
-    updateVisibleColumns(newColumns);
-    updateUseLabels(useLabels);
+    updateVisibleColumns(currentTab, newColumns);
+    updateUseLabels(currentTab, useLabels);
   };
 
   const handleSortUpdate = (sortFilters) => {
-    updateSortFilters(sortFilters);
+    updateSortFilters(currentTab, sortFilters);
   };
 
   const handleRowUpdate = (query, config) => {
-    updateRowQuery(query, config);
+    updateRowQuery(currentTab, query, config);
   };
+
+  const handleSetPage = (page) => {
+    setPage(currentTab, page);
+  }
 
   return (
     <div className="flex flex-col h-screen">
@@ -328,7 +399,7 @@ export default function Home() {
           updateDisplayApi={updateDisplayApi}
         />
       </div>
-      <Footer tab={tabs[currentTab]} setPage={setPage} />
+      <Footer tab={tabs[currentTab]} setPage={handleSetPage} />
 
       {showApiURLInputOverlay && (
         <Overlay

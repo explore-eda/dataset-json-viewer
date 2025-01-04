@@ -7,7 +7,7 @@ export default function AddressBar({handleOpenAPIOverlay, handleFileOpen, addres
 
   const handleButtonClick = () => {
     console.log("FileUploadMenuItem: Button clicked");
-    fileInputRef.current.click();
+    fileInputRef.click();
   };
 
   const handleFileChange = (event) => {

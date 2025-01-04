@@ -13,6 +13,7 @@ export default {
         'custom-beige': '#e0d4cc',
         'custom-beige-dark': '#d3c6be',
         'custom-blue': '#0c2470',
+        'custom-gray': '#333',
       },
     },
   },

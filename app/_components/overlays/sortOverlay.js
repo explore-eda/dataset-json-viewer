@@ -120,7 +120,7 @@ export default function SortOverlay({
 
           <div className="flex justify-end">
             <button
-              className="self-end bg-blue-500 hover:bg-blue-700 text-white font-bold mt-4 py-2 px-4 rounded focus:outline-none focus:shadow-outline mr-2"
+              className="self-end bg-custom-blue hover:bg-blue-900 text-white font-bold mt-4 py-2 px-4 rounded focus:outline-none focus:shadow-outline mr-2"
               onClick={() => handleOverlaySave()}
             >
               Update Sort

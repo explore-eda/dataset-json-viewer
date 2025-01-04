@@ -12,19 +12,23 @@ export default function RowOverlay({
   const rows = tab?.dataset.rows;
 
   const [selectedColumns, setSelectedColumns] = useState(
-    tab?.rowConfig?.selectedColumns || []
+    tab?.rowConfig?.selectedColumns || [""]
   ); // Array to store selected columns
   const [selectedOperators, setSelectedOperators] = useState(
-    tab?.rowConfig?.selectedOperators || []
+    tab?.rowConfig?.selectedOperators || [""]
   ); // Array to store selected operators
   const [selectedANDOR, setSelectedANDOR] = useState(
-    tab?.rowConfig?.selectedANDOR || []
+    tab?.rowConfig?.selectedANDOR || [""]
   ); // Array to store selected operators
   const [inputValues, setInputValues] = useState(
-    tab?.rowConfig?.inputValues || []
+    tab?.rowConfig?.inputValues || [""]
   ); // Array to store input values
   const [types, setTypes] = useState(tab?.rowConfig?.types || []); // Array to store data types
   const [hasErrors, setHasErrors] = useState(tab?.rowConfig?.hasErrors || []); // Array to store boolean flags indicating errors
+
+  const [queryString, setQueryString] = useState(
+    tab?.rowConfig?.queryString || ""
+  );
 
   const handleOverlayClose = () => {
     setShowOverlay(false);
@@ -32,17 +36,20 @@ export default function RowOverlay({
 
   const handleANDORChange = (event, index) => {
     const newSelectedANDOR = [...selectedANDOR];
-    newSelectedANDOR[index] = event.target.value;
+    newSelectedANDOR[index + 1] = event.target.value;
+    console.log(newSelectedANDOR);
     setSelectedANDOR(newSelectedANDOR);
   };
 
-  const handleOverlaySave = () => {
+  useEffect(() => {
     const newHasErrors = inputValues.map((value) => value === "");
     setHasErrors(newHasErrors);
 
     console.log(hasErrors);
     // Construct the query string
     let queryString = "";
+
+    console.log("selectedANDOR", selectedANDOR);
 
     if (!newHasErrors.some((error) => error)) {
       for (let i = 0; i < selectedColumns.length; i++) {
@@ -57,36 +64,50 @@ export default function RowOverlay({
         } else {
           queryString += `${inputValues[i]} `;
         }
-        if (i < selectedColumns.length - 1) {
-          queryString += ` ${selectedANDOR[i]} `;
+        if (selectedANDOR[i + 1]) {
+          queryString += ` ${selectedANDOR[i + 1]} `;
         }
       }
 
-      const rowConfig = {
-        queryString,
-        selectedColumns,
-        selectedOperators,
-        inputValues,
-        types,
-        selectedANDOR,
-        hasErrors,
-      };
+      console.log("queryString", queryString);
 
-      handleUpdate(queryString, rowConfig);
-      setShowOverlay(false);
+      setQueryString(queryString);
     }
+  }, [selectedColumns, selectedOperators, inputValues, types, selectedANDOR]);
+
+  const handleOverlaySave = () => {
+    const rowConfig = {
+      queryString,
+      selectedColumns,
+      selectedOperators,
+      inputValues,
+      types,
+      selectedANDOR,
+      hasErrors,
+    };
+
+    handleUpdate(queryString, rowConfig);
+    setShowOverlay(false);
   };
 
   const handleColumnChange = (event, index) => {
+    console.log("event.target.value", event.target.value);
     const newSelectedColumns = [...selectedColumns];
     newSelectedColumns[index] = event.target.value;
+    console.log("newSelectedColumns", newSelectedColumns);
     setSelectedColumns(newSelectedColumns);
+
+    console.log("event.target.value", event.target.value);
+    console.log("selectedColumns", selectedColumns);
 
     const selectedColumnObject = columns.find(
       (column) => column.name === event.target.value
     );
+    console.log("selectedColumnObject", selectedColumnObject);
+
     const newTypes = [...types];
     newTypes[index] = selectedColumnObject?.dataType;
+    console.log("newTypes", newTypes);
     setTypes(newTypes);
 
     const newInputValues = [...inputValues];
@@ -149,6 +170,15 @@ export default function RowOverlay({
           />
         );
       default:
+        if (types[index] && selectedOperators[index]) {
+          return (
+            <input
+              value={inputValues[index]}
+              onChange={(event) => handleInputChange(event, index)}
+              className={`input-field ${hasErrors[index] ? "error" : ""}`}
+            />
+          );
+        }
         return (
           <input
             disabled
@@ -227,8 +257,10 @@ export default function RowOverlay({
                     <select
                       value={selectedOperators[index]}
                       onChange={(event) => handleOperatorChange(event, index)}
-                      className={`input-field ${hasErrors[index] ? "error" : ""}`}
-                      >
+                      className={`input-field ${
+                        hasErrors[index] ? "error" : ""
+                      }`}
+                    >
                       <option value="==">{"Equals (==)"}</option>
                       <option value="!=">{"Not Equals (!=)"}</option>
                       <option value=">">{"Greater Than (>)"}</option>
@@ -243,7 +275,7 @@ export default function RowOverlay({
 
                     {index < selectedColumns.length - 1 && (
                       <select
-                        value={selectedANDOR[index]}
+                        value={selectedANDOR[index + 1]}
                         onChange={(event) => handleANDORChange(event, index)}
                         className={`input-field ${
                           hasErrors[index] ? "error" : ""
@@ -264,20 +296,30 @@ export default function RowOverlay({
               </div>
             ))}
 
-            <div className="flex justify-end">
-              <button
-                onClick={handleAddFilterSection}
-                className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded"
-              >
-                + Add Filter
-              </button>
+            <div className="flex flex-row justify-between gap-8">
+              <textarea
+                type="text"
+                className="input-field grow h-full resize-none"
+                placeholder="Query Generated"
+                value={queryString}
+                onChange={(event) => setQueryString(event.target.value)}
+              />
 
-              <button
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mr-2"
-                onClick={handleOverlaySave}
-              >
-                Request Query
-              </button>
+              <div className="justify-end">
+                <button
+                  onClick={handleAddFilterSection}
+                  className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded"
+                >
+                  + Add Filter
+                </button>
+
+                <button
+                  className="bg-custom-blue hover:bg-blue-900 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                  onClick={handleOverlaySave}
+                >
+                  Request Query
+                </button>
+              </div>
             </div>
           </div>
         </div>

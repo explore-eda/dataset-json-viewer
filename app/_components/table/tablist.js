@@ -1,5 +1,6 @@
 import { useDataStore } from "../../_utils/zustand/tablestore";
 import { PlusIcon } from "@heroicons/react/24/solid";
+import 'animate.css';
 
 export default function TabList({
   tabs,
@@ -9,6 +10,7 @@ export default function TabList({
   overlayFunction,
 }) {
   const { setApplicationStatus } = useDataStore();
+  
 
   const handleTableClick = (tabUUID) => {
     setCurrentTab(tabUUID);
@@ -19,24 +21,29 @@ export default function TabList({
     removeTab(tabUUID);
   };
 
+  console.log("currentTab", currentTab);
+  console.log("currentTab", currentTab);
+
   return (
     <div className="flex gap-1 mb-2">
       {Object.keys(tabs).length > 0 &&
         Object.keys(tabs).map(
           (tabUUID) => (
-            console.log("tabUUID", tabUUID),
-            console.log("currentTab", currentTab),
             (
               <div
                 key={tabUUID}
-                className={`bg-custom-beige flex items-center rounded-b-lg shadow-lg  ${
-                  currentTab.toString() === tabUUID.toString()
-                    ? "bg-white"
+                className={`bg-custom-beige flex items-center rounded-b-lg  ${
+                  currentTab.toString() === tabUUID
+                    ? "mt-1 rounded-md bg-gray-100 border-gray-500 border-2 font-bold"
                     : "bg-custom-beige"
                 }`}
               >
-                <button onClick={() => handleTableClick(tabUUID)}>
-                  {tabs[tabUUID].datasetOID}
+                <button onClick={() => handleTableClick(tabUUID)} className={`${
+                  currentTab.toString() === tabUUID
+                    ? "italic "
+                    : ""
+                }`}>
+                  {tabs[tabUUID]?.datasetOID}
                 </button>
                 <button
                   onClick={() => handleRemoveTab(tabUUID)}
@@ -49,7 +56,7 @@ export default function TabList({
           )
         )}
       <div
-        className="ml-1 flex items-center bg-custom-beige mt-1 p-3 rounded-full shadow-lg hover:bg-custom-beige-dark cursor-pointer"
+        className="ml-1 flex items-center bg-custom-beige mt-1 p-3 rounded-lg shadow-lg hover:bg-custom-beige-dark cursor-pointer"
         onClick={overlayFunction}
       >
         <div className="h-5 w-5 ">

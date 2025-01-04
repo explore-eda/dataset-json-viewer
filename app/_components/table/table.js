@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-export default function Table({ tab }) {
+export default function Table({tab}) {
   if (!tab) {
     return null;
   }
@@ -13,7 +13,7 @@ export default function Table({ tab }) {
     rowNumbers.push(tab.page * tab.limit + i + 1);
   }
 
-  const processedRows = dataset.rows.slice(0, tab.limit).map((row, rowIndex) => {
+  const processedRows = dataset.rows.slice(tab.page * tab.limit, (tab.page + 1) * tab.limit).map((row, rowIndex) => {
     const lowerCaseRow = {};
     for (const key in row) {
       lowerCaseRow[key.toLowerCase()] = row[key];
@@ -38,7 +38,7 @@ export default function Table({ tab }) {
   };
 
   return (
-    <table className="bg-white mb-20 h-full">
+    <table className="bg-white mb-20">
       <thead>
         <tr>
           <th key="rowNumber">#</th>

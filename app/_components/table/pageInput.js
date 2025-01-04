@@ -2,7 +2,7 @@ import React, {useState, useEffect } from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 
 const PageInput = ({ tab, setPage }) => {
-  const [currentPage, setCurrentPage] = useState(tab?.page ?? 0);
+  const [currentPage, setCurrentPage] = useState(0);
 
   const handleClickRight = (page) => {
     const newPage = page + 1;
@@ -38,6 +38,8 @@ const PageInput = ({ tab, setPage }) => {
   const handleInputBlur = () => {
     setPage(inputValue);
   };
+
+  console.log("tab", tab);
   
   if (tab?.totalPages) {
     return (

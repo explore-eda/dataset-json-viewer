@@ -17,8 +17,8 @@ export default function Header({
   sortFunction,
 }) {
   return (
-    <header className="flex bg-custom-beige flex-col w-full text-lg">
-      <div className="bg-custom-blue w-full py-2 text-sm font-bold text-white text-center">
+    <header className="flex bg-custom-beige flex-col w-full text-lg shadow-lg ">
+      <div className="bg-custom-blue w-full h-10 justify-center content-center py-2 text-sm font-bold text-white text-center">
         <em>Dataset-JSON Viewer</em>
       </div>
       <div className="flex w-full flex-col items-center center content-center md:flex-row md:items-baseline md:justify-between mx-auto md:mx-0">

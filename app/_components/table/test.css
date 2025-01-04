@@ -33,3 +33,7 @@
   .animate-wiggle-right {
     animation: wiggle-right 1s ease-in-out infinite;
   }
+
+  .horizontal-scroll-container {
+    overflow-x: auto;
+  }
