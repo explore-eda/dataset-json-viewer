@@ -14,7 +14,7 @@ export default function Footer({ tab, setPage }) {
   return (
     <footer className="bg-custom-beige w-full h-20 flex sm:px-0 items-center justify-between">
       <div
-        className="mx-5 max-h-10 w-96 border rounded-md border-custom-beige hover:bg-gray-100 cursor-pointer"
+        className="mx-5 max-h-10 w-96 border overflow-auto rounded-md border-custom-beige hover:bg-gray-100 cursor-pointer"
         onClick={handleExpandClick}
       >
         <div className="flex items-center content-center w-full">
@@ -49,9 +49,9 @@ export default function Footer({ tab, setPage }) {
               />
             </svg>
           )}
-          <div className="ml-2">
+          <div className="ml-2 overflow-y-auto">
             {applicationStatus[0]}
-            </div>
+          </div>
         </div>
       </div>
       <div className="mr-5">

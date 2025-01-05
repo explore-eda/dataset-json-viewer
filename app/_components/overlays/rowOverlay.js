@@ -15,7 +15,7 @@ export default function RowOverlay({
     tab?.rowConfig?.selectedColumns || [""]
   ); // Array to store selected columns
   const [selectedOperators, setSelectedOperators] = useState(
-    tab?.rowConfig?.selectedOperators || [""]
+    tab?.rowConfig?.selectedOperators || ["=="]
   ); // Array to store selected operators
   const [selectedANDOR, setSelectedANDOR] = useState(
     tab?.rowConfig?.selectedANDOR || [""]

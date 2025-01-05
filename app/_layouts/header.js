@@ -15,6 +15,7 @@ export default function Header({
   columnFunction,
   rowFunction,
   sortFunction,
+  ref,
 }) {
   return (
     <header className="flex bg-custom-beige flex-col w-full text-lg shadow-lg ">

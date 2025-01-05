@@ -22,8 +22,6 @@ const PageInput = ({ tab, setPage }) => {
     setPage(newPage);
   };
 
-  const maxPage = tab?.totalPages - 1;
-
   const [inputValue, setInputValue] = useState(tab?.page ?? 0);
 
   useEffect(() => {
@@ -36,12 +34,15 @@ const PageInput = ({ tab, setPage }) => {
   };
 
   const handleInputBlur = () => {
+    console.log("newPage",newPage);
     setPage(inputValue);
   };
 
-  console.log("tab", tab);
+  console.log("totalpages",tab?.totalPages);
+  console.log("totalpages",tab?.totalPages);
+
   
-  if (tab?.totalPages) {
+  if (tab?.totalPages > 0) {
     return (
       <div className="flex flex-row">
         <button
@@ -57,7 +58,7 @@ const PageInput = ({ tab, setPage }) => {
           onChange={handleInputChange}
           onBlur={handleInputBlur}
           min="0"
-          max={tab?.totalPages - 1}
+          max={tab?.totalPages - 1 || 0}
           className="border rounded-md px-3 py-1 mx-2"
         ></input>
     

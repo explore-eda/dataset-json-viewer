@@ -5,7 +5,7 @@ import LibraryView from "../_components/table/libraryview";
 import { useEffect, useRef } from "react";
 import { useDataStore } from "../_utils/zustand/tablestore";
 
-const WorkSpace = ({tab, handleDatasetFromLibrary, setDataset, updateDisplayApi}) => {
+const WorkSpace = ({tab, handleDatasetFromLibrary, setDataset, updateDisplayApi, updateTotal, calculatedHeight}) => {
   const { setErrorMessage, setApplicationStatus } = useDataStore();
   const tableType = tab?.type;
 
@@ -35,11 +35,13 @@ const WorkSpace = ({tab, handleDatasetFromLibrary, setDataset, updateDisplayApi}
     }
   
     if (tab.sortFilters.length > 0) {
-      const sortParams = tab.sortFilters.map(sort => `${sort}`).join(',');
+      const sortParams = tab.sortFilters.map(sort => `${sort}`).join(';');
       queryString += `sort=${sortParams}&`; 
     }
   
     if (tab.paginationActive) {
+      console.log("paginationActive", tab);
+      
       const offset = tab.page*tab.limit;
       queryString += `offset=${offset}&limit=${tab.limit}`;
     }
@@ -50,6 +52,8 @@ const WorkSpace = ({tab, handleDatasetFromLibrary, setDataset, updateDisplayApi}
     abortControllerRef.current = new AbortController();
 
     const requestId = Date.now();
+
+    console.log("requestId", request);
   
     setApplicationStatus(`${requestId}: New API Request: ${queryString}`);
     fetch(request, { signal: abortControllerRef.current.signal }) 
@@ -61,8 +65,9 @@ const WorkSpace = ({tab, handleDatasetFromLibrary, setDataset, updateDisplayApi}
       })
       .then((data) => {
         setApplicationStatus(`${requestId}: Api Request Was Successful! `);
-        setDataset(tab.datasetOID, data);
-        updateDisplayApi(tab.datasetOID, request);
+        setDataset(tab.tabUUID, data);
+        updateDisplayApi(tab.tabUUID, request);
+        updateTotal(tab.tabUUID, data.pagination.total);
         return true;
       })
       .catch((error) => {
@@ -86,11 +91,16 @@ const WorkSpace = ({tab, handleDatasetFromLibrary, setDataset, updateDisplayApi}
       </main>
     );
   }
+
+  console.log("calculatedHeight", calculatedHeight.toString())
+
+  console.log("calculatedHeight", calculatedHeight-800 + "")
   
   if(tableType === "dataset") {
     return (
-      <main className="h-full w-full shadow-inner overflow-hidden overflow-x-auto">
-        <div className="h-full px-5 overflow-auto overflow-x-auto">
+      <main className="h-full  shadow-inner overflow-hidden max-h-[${(calculatedHeight-800) + ">
+        <div                     className={`h-full px-5 overflow-auto max-h-200px max-h-[${(calculatedHeight-800) + ""}] overflow-x-auto`} 
+ >
           <Table tab={tab} />
         </div>
       </main>

@@ -128,8 +128,10 @@ export default function Home() {
   };
 
   const setPage = (tabName, page) => {
-    console.log("setPage", tabName, page);
-    const newPage = Math.min(page, tabs[tabName]?.totalPages - 1);
+    console.log("setPage", tabName, page); 
+    const posTotalPages = Math.max(tabs[tabName]?.totalPages - 1, 0); 
+    const newPage = Math.min(page, posTotalPages);
+    console.log("newPage", newPage);
     setTabs((prevTabs) => ({
       ...prevTabs,
       [tabName]: {
@@ -148,6 +150,22 @@ export default function Home() {
       },
     }));
   };
+
+  const updateTotal = (tabName, newTotal) => {
+    const newTotalPages = Math.ceil(newTotal /  tabs[tabName].limit);
+    console.log("updateTotal", tabName, newTotal, newTotalPages);
+    const posTotalPages = Math.max(newTotalPages - 1, 0);
+    const newPage = Math.min(tabs[tabName].page, posTotalPages);
+    setTabs((prevTabs) => ({
+      ...prevTabs,
+      [tabName]: {
+        ...prevTabs[tabName],
+        total: newTotal,
+        totalPages: newTotalPages,
+        page: newPage,
+      },
+    }));
+  }
 
   const updateLimit = (tabName, newLimit) => {
     const newTotalPages = Math.ceil(tabs[tabName].total / newLimit);
@@ -211,7 +229,7 @@ export default function Home() {
           const tabUUID = addTab(selectedData, data, request, "dataset", "api");
           setCurrentTab(tabUUID);
 
-          setApplicationStatus(`[${selectedData}] Successfully fetched table `);
+          setApplicationStatus(`[${selectedData}] Successfully fetched Dataset Table `);
           return true;
         } else {
           const tabUUID = addTab(
@@ -224,7 +242,7 @@ export default function Home() {
           setCurrentTab(tabUUID);
 
           setApplicationStatus(
-            `[${selectedStudy}] Successfully fetched table `
+            `[${selectedStudy}] Successfully fetched Library Table `
           );
           return true;
         }
@@ -368,11 +386,48 @@ export default function Home() {
   };
 
   const handleSetPage = (page) => {
+    console.log("handleSetPage", currentTab, page);
     setPage(currentTab, page);
   }
 
+  const [componentAHeight, setComponentAHeight] = useState(0);
+  const [componentBHeight, setComponentBHeight] = useState(0);
+  const [componentCHeight, setComponentCHeight] = useState(0);
+  const componentARef = useRef(null);
+  const componentBRef = useRef(null);
+  const componentCRef = useRef(null);
+  const calculatedHeight = window.innerHeight - componentAHeight + componentBHeight + componentCHeight;
+    
+    console.log("componentARef", componentARef);
+    console.log("componentBRef", componentBRef);
+
+    useEffect(() => {
+      const handleResize = () => {
+        if (componentARef.current && componentBRef.current && componentCRef.current) {
+          setComponentAHeight(componentARef.current.clientHeight);
+          setComponentBHeight(componentBRef.current.clientHeight);
+          setComponentCHeight(componentBRef.current.clientHeight);
+        }
+      };
+  
+      // Call handleResize only after refs are populated
+      const handleInitialMeasurements = () => {
+        if (componentARef.current && componentBRef.current) {
+          handleResize(); 
+        }
+      };
+  
+      window.addEventListener('resize', handleResize);
+      requestAnimationFrame(handleInitialMeasurements); // Schedule initial measurement
+  
+      return () => {
+        window.removeEventListener('resize', handleResize);
+      };
+    }, [componentARef?.current?.clientHeight, componentBRef?.current?.clientHeight, componentCRef?.current?.clientHeight]);
+
   return (
     <div className="flex flex-col h-screen">
+      <div ref={componentARef} className="w-full">
       <Header
         handleFileOpen={handleFileOpen}
         handleOpenAPIOverlay={() => setShowAPIURLInputOverlay(true)}
@@ -384,22 +439,31 @@ export default function Home() {
         sortFunction={() => setShowSortOverlay(true)}
         addressBarText={tabs[currentTab]?.displayApi}
       />
+      </div>
       <div className="background h-full w-full overflow-hidden">
+        <div ref={componentBRef}>
         <TabList
+          ref={componentBRef}
           tabs={tabs}
           currentTab={currentTab}
           setCurrentTab={setCurrentTab}
           removeTab={removeTab}
           overlayFunction={() => setShowAPIURLInputOverlay(true)}
         />
+        </div>
+
         <WorkSpace
           tab={tabs[currentTab]}
           handleDatasetFromLibrary={handleDatasetFromLibrary}
           setDataset={setDataset}
           updateDisplayApi={updateDisplayApi}
+          updateTotal={updateTotal}
+          calculatedHeight={calculatedHeight}
         />
       </div>
+      <div ref={componentCRef}>
       <Footer tab={tabs[currentTab]} setPage={handleSetPage} />
+      </div>
 
       {showApiURLInputOverlay && (
         <Overlay

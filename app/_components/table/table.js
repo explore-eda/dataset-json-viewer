@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-export default function Table({tab}) {
+export default function Table({ tab }) {
   if (!tab) {
     return null;
   }
@@ -13,24 +13,32 @@ export default function Table({tab}) {
     rowNumbers.push(tab.page * tab.limit + i + 1);
   }
 
-  const processedRows = dataset.rows.slice(tab.page * tab.limit, (tab.page + 1) * tab.limit).map((row, rowIndex) => {
-    const lowerCaseRow = {};
-    for (const key in row) {
-      lowerCaseRow[key.toLowerCase()] = row[key];
-    }
-    return { ...lowerCaseRow, rowNumber: rowNumbers[rowIndex] };
-  });
-
-  console.log("processedRows");
-  console.log(processedRows);
+  let processedRows; 
+  if (tab.sourceType === "local") {
+    processedRows = dataset.rows
+      .slice(tab.page * tab.limit, (tab.page + 1) * tab.limit)
+      .map((row, rowIndex) => {
+        const lowerCaseRow = {};
+        for (const key in row) {
+          lowerCaseRow[key.toLowerCase()] = row[key];
+        }
+        return { ...lowerCaseRow, rowNumber: rowNumbers[rowIndex] };
+      });
+  } else {
+    processedRows = dataset.rows.map((row, rowIndex) => {
+      const lowerCaseRow = {};
+      for (const key in row) {
+        lowerCaseRow[key.toLowerCase()] = row[key];
+      }
+      return { ...lowerCaseRow, rowNumber: rowNumbers[rowIndex] };
+    });
+  }
 
   const processedColumns = tab.visibleColumns.map((column) => ({
     ...column,
     name: column.name.toLowerCase(),
   }));
 
-  console.log("processedCols");
-  console.log(processedColumns);
 
   const handleHeaderClick = (columnIndex) => {
     // Implement your header click logic here (e.g., sorting)
