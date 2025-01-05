@@ -5,7 +5,7 @@ import LibraryView from "../_components/table/libraryview";
 import { useEffect, useRef } from "react";
 import { useDataStore } from "../_utils/zustand/tablestore";
 
-const WorkSpace = ({tab, handleDatasetFromLibrary, setDataset, updateDisplayApi, updateTotal, calculatedHeight}) => {
+const WorkSpace = ({tab, handleDatasetFromLibrary, setDataset, updateDisplayApi, updateTotal, }) => {
   const { setErrorMessage, setApplicationStatus } = useDataStore();
   const tableType = tab?.type;
 
@@ -91,16 +91,11 @@ const WorkSpace = ({tab, handleDatasetFromLibrary, setDataset, updateDisplayApi,
       </main>
     );
   }
-
-  console.log("calculatedHeight", calculatedHeight.toString())
-
-  console.log("calculatedHeight", calculatedHeight-800 + "")
   
   if(tableType === "dataset") {
     return (
-      <main className="h-full  shadow-inner overflow-hidden max-h-[${(calculatedHeight-800) + ">
-        <div                     className={`h-full px-5 overflow-auto max-h-200px max-h-[${(calculatedHeight-800) + ""}] overflow-x-auto`} 
- >
+      <main className="h-full  shadow-inner overflow-hidden">
+        <div className="h-full px-5 overflow-auto max-h-[calc(80vh-110px)]">
           <Table tab={tab} />
         </div>
       </main>

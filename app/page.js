@@ -390,44 +390,8 @@ export default function Home() {
     setPage(currentTab, page);
   }
 
-  const [componentAHeight, setComponentAHeight] = useState(0);
-  const [componentBHeight, setComponentBHeight] = useState(0);
-  const [componentCHeight, setComponentCHeight] = useState(0);
-  const componentARef = useRef(null);
-  const componentBRef = useRef(null);
-  const componentCRef = useRef(null);
-  const calculatedHeight = window.innerHeight - componentAHeight + componentBHeight + componentCHeight;
-    
-    console.log("componentARef", componentARef);
-    console.log("componentBRef", componentBRef);
-
-    useEffect(() => {
-      const handleResize = () => {
-        if (componentARef.current && componentBRef.current && componentCRef.current) {
-          setComponentAHeight(componentARef.current.clientHeight);
-          setComponentBHeight(componentBRef.current.clientHeight);
-          setComponentCHeight(componentBRef.current.clientHeight);
-        }
-      };
-  
-      // Call handleResize only after refs are populated
-      const handleInitialMeasurements = () => {
-        if (componentARef.current && componentBRef.current) {
-          handleResize(); 
-        }
-      };
-  
-      window.addEventListener('resize', handleResize);
-      requestAnimationFrame(handleInitialMeasurements); // Schedule initial measurement
-  
-      return () => {
-        window.removeEventListener('resize', handleResize);
-      };
-    }, [componentARef?.current?.clientHeight, componentBRef?.current?.clientHeight, componentCRef?.current?.clientHeight]);
-
   return (
     <div className="flex flex-col h-screen">
-      <div ref={componentARef} className="w-full">
       <Header
         handleFileOpen={handleFileOpen}
         handleOpenAPIOverlay={() => setShowAPIURLInputOverlay(true)}
@@ -439,18 +403,14 @@ export default function Home() {
         sortFunction={() => setShowSortOverlay(true)}
         addressBarText={tabs[currentTab]?.displayApi}
       />
-      </div>
-      <div className="background h-full w-full overflow-hidden">
-        <div ref={componentBRef}>
+      <div className="background h-full overflow-hidden">
         <TabList
-          ref={componentBRef}
           tabs={tabs}
           currentTab={currentTab}
           setCurrentTab={setCurrentTab}
           removeTab={removeTab}
           overlayFunction={() => setShowAPIURLInputOverlay(true)}
         />
-        </div>
 
         <WorkSpace
           tab={tabs[currentTab]}
@@ -458,12 +418,10 @@ export default function Home() {
           setDataset={setDataset}
           updateDisplayApi={updateDisplayApi}
           updateTotal={updateTotal}
-          calculatedHeight={calculatedHeight}
         />
-      </div>
-      <div ref={componentCRef}>
+                </div>
+
       <Footer tab={tabs[currentTab]} setPage={handleSetPage} />
-      </div>
 
       {showApiURLInputOverlay && (
         <Overlay
