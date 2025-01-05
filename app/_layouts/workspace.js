@@ -35,7 +35,7 @@ const WorkSpace = ({tab, handleDatasetFromLibrary, setDataset, updateDisplayApi,
     }
   
     if (tab.sortFilters.length > 0) {
-      const sortParams = tab.sortFilters.map(sort => `${sort}`).join(';');
+      const sortParams = tab.sortFilters.map(sort => `${sort}`).join(',');
       queryString += `sort=${sortParams}&`; 
     }
   

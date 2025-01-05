@@ -28,12 +28,12 @@ export default function SortOverlay({
       // If it exists, update the direction
       setSortedColumns(
         sortFilters.map((s) =>
-          s === existingSort ? `${columnName}:${newDirection}` : s
+          s === existingSort ? `${columnName} ${newDirection}` : s
         )
       );
     } else {
       // If it doesn't exist, add a new sort filter with the new direction
-      setSortedColumns([...sortFilters, `${columnName}:${newDirection}`]);
+      setSortedColumns([...sortFilters, `${columnName} ${newDirection}`]);
     }
   };
 
