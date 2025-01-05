@@ -72,8 +72,11 @@ return (
           />
         </div>
 
-        <div className="flex justify-between">
+        <div className="flex justify-between items-center gap-4">
+          <div>
+          <div>Total: Records: {tab?.total}</div>
           <div>Total Pages: {Math.ceil(tab?.total / limit)}</div>
+          </div>
           <button
             className="self-end bg-custom-blue hover:bg-blue-900 text-white font-bold mt-4 py-2 px-4 rounded focus:outline-none focus:shadow-outline mr-2"
             onClick={() => handleOverlaySave()}
