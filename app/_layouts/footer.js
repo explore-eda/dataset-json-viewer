@@ -58,7 +58,7 @@ export default function Footer({ tab, setPage }) {
         <PageInput tab={tab} setPage={setPage} />
       </div>
       <div
-        className={`z-40  absolute bottom-0 left-5 shadow-lg border-x border-t border-gray-500 ${
+        className={`z-40  absolute bottom-0 left-5 shadow-lg border-x border-t border-gray-500 cursor-pointer ${
           isExpanded
             ? "animate__animated animate__slideInUp"
             : "animate__animated animate__slideInDown hidden"

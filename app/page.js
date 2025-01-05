@@ -25,8 +25,19 @@ export default function Home() {
     dataSource,
     dataType,
     sourceType,
+    extension,
     defaultLimit
   ) => {
+    console.log(
+      "addTab",
+      tabName,
+      dataset,
+      dataSource,
+      dataType,
+      sourceType,
+      extension,
+      defaultLimit
+    );
     const tabUUID = Date.now();
     setTabs((prevTabs) => ({
       ...prevTabs,
@@ -39,6 +50,7 @@ export default function Home() {
         dataset: dataset,
         type: dataType,
         sourceType: sourceType,
+        extension: extension,
 
         sortFilters: [],
         useLabels: false,
@@ -128,8 +140,8 @@ export default function Home() {
   };
 
   const setPage = (tabName, page) => {
-    console.log("setPage", tabName, page); 
-    const posTotalPages = Math.max(tabs[tabName]?.totalPages - 1, 0); 
+    console.log("setPage", tabName, page);
+    const posTotalPages = Math.max(tabs[tabName]?.totalPages - 1, 0);
     const newPage = Math.min(page, posTotalPages);
     console.log("newPage", newPage);
     setTabs((prevTabs) => ({
@@ -152,7 +164,7 @@ export default function Home() {
   };
 
   const updateTotal = (tabName, newTotal) => {
-    const newTotalPages = Math.ceil(newTotal /  tabs[tabName].limit);
+    const newTotalPages = Math.ceil(newTotal / tabs[tabName].limit);
     console.log("updateTotal", tabName, newTotal, newTotalPages);
     const posTotalPages = Math.max(newTotalPages - 1, 0);
     const newPage = Math.min(tabs[tabName].page, posTotalPages);
@@ -165,7 +177,7 @@ export default function Home() {
         page: newPage,
       },
     }));
-  }
+  };
 
   const updateLimit = (tabName, newLimit) => {
     const newTotalPages = Math.ceil(tabs[tabName].total / newLimit);
@@ -214,22 +226,42 @@ export default function Home() {
 
     const request =
       url + "/studies/" + selectedStudy + "/datasets" + "/" + selectedData;
-    setApplicationStatus(`[${selectedStudy}] Fetching New Table "`);
+    setApplicationStatus(
+      `[${selectedData ?? selectedStudy}] Fetching New Table`
+    );
+
     return fetch(request)
       .then((response) => {
         if (!response.ok) {
-          setApplicationStatus(`[${selectedStudy}] Failed to fetch new table `);
+          setApplicationStatus(
+            `[${selectedData ?? selectedStudy}] Failed to fetch new table `
+          );
           errorToast(response.status);
           return false;
         }
-        return response.json();
+        const extension = getExtension(request);
+        if (extension === "ndjson") {
+          console.log("response", response);
+          return response.text().then(parseNDJSON);
+        } else {
+          return response.json();
+        }
       })
       .then((data) => {
         if (selectedData) {
-          const tabUUID = addTab(selectedData, data, request, "dataset", "api");
+          const tabUUID = addTab(
+            selectedData,
+            data,
+            request,
+            "dataset",
+            "api",
+            getExtension(selectedData)
+          );
           setCurrentTab(tabUUID);
 
-          setApplicationStatus(`[${selectedData}] Successfully fetched Dataset Table `);
+          setApplicationStatus(
+            `[${selectedData}] Successfully fetched Dataset Table `
+          );
           return true;
         } else {
           const tabUUID = addTab(
@@ -237,7 +269,8 @@ export default function Home() {
             data,
             request,
             "library",
-            "api"
+            "api",
+            getExtension(selectedStudy)
           );
           setCurrentTab(tabUUID);
 
@@ -250,8 +283,67 @@ export default function Home() {
       .catch((error) => {
         setApplicationStatus("Failed to fetch table: " + request);
         errorToast(error.message);
+        console.log("response", error.message);
+
         return false;
       });
+  };
+
+  function parseNDJSON(data) {
+    const output = {
+      datasetJSONCreationDateTime: null,
+      datasetJSONVersion: null,
+      fileOID: null,
+      dbLastModifiedDateTime: null,
+      originator: null,
+      sourceSystem: null,
+      studyOID: null,
+      metaDataVersionOID: null,
+      metaDataRef: null,
+      itemGroupOID: null,
+      records: null,
+      name: null,
+      label: null,
+      columns: null,
+      rows: [],
+      pagination: null,
+    };
+
+    const lines = data.trim().split("\n");
+
+    if (lines.length === 0) {
+      return output; // Handle empty data
+    }
+
+    const firstLine = JSON.parse(lines[0]);
+    output.datasetJSONCreationDateTime = firstLine.datasetJSONCreationDateTime;
+    output.datasetJSONVersion = firstLine.datasetJSONVersion;
+    output.fileOID = firstLine.fileOID;
+    output.dbLastModifiedDateTime = firstLine.dbLastModifiedDateTime;
+    output.originator = firstLine.originator;
+    output.sourceSystem = firstLine.sourceSystem;
+    output.studyOID = firstLine.studyOID;
+    output.metaDataVersionOID = firstLine.metaDataVersionOID;
+    output.metaDataRef = firstLine.metaDataRef;
+    output.itemGroupOID = firstLine.itemGroupOID;
+    output.records = firstLine.records;
+    output.name = firstLine.name;
+    output.label = firstLine.label;
+    output.columns = firstLine.columns;
+
+    for (let i = 1; i < lines.length - 1; i++) {
+      const lineData = JSON.parse(lines[i]);
+      output.rows.push(Object.values(lineData)); // Extract values as an array
+    }
+
+    const lastLine = JSON.parse(lines[lines.length - 1]);
+    output.pagination = lastLine.pagination;
+
+    return output;
+  }
+
+  const getExtension = (filename) => {
+    return filename.split(".").pop();
   };
 
   // Handle File Open
@@ -262,13 +354,20 @@ export default function Home() {
 
     reader.onload = (e) => {
       try {
-        const jsonData = JSON.parse(e.target.result);
+        const extention = getExtension(file.name);
+        let jsonData;
+        if(extention === "ndjson") {
+          jsonData = parseNDJSON(e.target.result);
+        }else {
+          jsonData = JSON.parse(e.target.result);
+        }
         const tabUUID = addTab(
           file.name,
           jsonData,
           file.name,
           "dataset",
-          "local"
+          "local",
+          getExtension(file.name)
         );
         setCurrentTab(tabUUID);
         setApplicationStatus("Opened File");
@@ -309,11 +408,15 @@ export default function Home() {
       event.preventDefault();
       fetchDatasetFromLibrary(datasetOID);
     } else {
-      const value = fetchDatasetFromLibrary(datasetOID);
-
-      if (value) {
-        setCurrentTab(value);
-      }
+      fetchDatasetFromLibrary(datasetOID)
+        .then((value) => {
+          if(value) {
+          console.log("value", value);
+          setCurrentTab(value);}
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+        });
     }
   };
 
@@ -322,9 +425,7 @@ export default function Home() {
       return true;
     } else {
       if (!navigator.onLine) {
-        errorToast(
-          "No internet connection. Please connect and try again."
-        );
+        errorToast("No internet connection. Please connect and try again.");
         return false;
       }
 
@@ -336,14 +437,27 @@ export default function Home() {
           if (!response.ok) {
             throw new Error("Network response was not ok");
           }
-          return response.json();
+          const extension = getExtension(request);
+          if (extension === "ndjson") {
+            console.log("response", response);
+            return response.text().then(parseNDJSON);
+          } else {
+            return response.json();
+          }
         })
         .then((data) => {
           if (data === false) {
             return false;
           }
           // This block only executes if response.ok was true
-          const tabUUID = addTab(datasetOID, data, request, "dataset", "api");
+          const tabUUID = addTab(
+            datasetOID,
+            data,
+            request,
+            "dataset",
+            "api",
+            getExtension(datasetOID)
+          );
           setApplicationStatus(
             `[${datasetOID}]: Successfully fetched dataset `
           );
@@ -388,7 +502,7 @@ export default function Home() {
   const handleSetPage = (page) => {
     console.log("handleSetPage", currentTab, page);
     setPage(currentTab, page);
-  }
+  };
 
   return (
     <div className="flex flex-col h-screen">
@@ -418,8 +532,10 @@ export default function Home() {
           setDataset={setDataset}
           updateDisplayApi={updateDisplayApi}
           updateTotal={updateTotal}
+          parseNDJSON={parseNDJSON}
+          getExtension={getExtension}
         />
-                </div>
+      </div>
 
       <Footer tab={tabs[currentTab]} setPage={handleSetPage} />
 

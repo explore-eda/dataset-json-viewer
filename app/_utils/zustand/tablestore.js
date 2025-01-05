@@ -3,7 +3,7 @@ import { create } from "zustand";
 // Handles Data for current table
 const useDataStore = create((set) => ({
   errorMessage: null,
-  applicationStatus: ["Initalizing..."],
+  applicationStatus: ["Select a Datasource"],
 
   setErrorMessage: (error) =>
     set({

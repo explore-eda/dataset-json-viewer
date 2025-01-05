@@ -97,7 +97,7 @@ const FileUploadMenuItem = ({ onFileChange }) => {
       <input
         type="file"
         ref={fileInputRef}
-        accept=".json"
+        accept=".json, .ndjson"
         style={{ display: "none" }}
         onChange={handleFileChange}
       />

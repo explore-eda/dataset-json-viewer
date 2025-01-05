@@ -5,7 +5,7 @@ import LibraryView from "../_components/table/libraryview";
 import { useEffect, useRef } from "react";
 import { useDataStore } from "../_utils/zustand/tablestore";
 
-const WorkSpace = ({tab, handleDatasetFromLibrary, setDataset, updateDisplayApi, updateTotal, }) => {
+const WorkSpace = ({tab, handleDatasetFromLibrary, setDataset, updateDisplayApi, updateTotal, parseNDJSON, getExtension }) => {
   const { setErrorMessage, setApplicationStatus } = useDataStore();
   const tableType = tab?.type;
 
@@ -61,7 +61,12 @@ const WorkSpace = ({tab, handleDatasetFromLibrary, setDataset, updateDisplayApi,
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-        return response.json();
+        if (tab.extension === "ndjson") {
+          console.log("response", response);
+          return response.text().then(parseNDJSON);
+        } else {
+          return response.json();
+        }
       })
       .then((data) => {
         setApplicationStatus(`${requestId}: Api Request Was Successful! `);
@@ -82,6 +87,8 @@ const WorkSpace = ({tab, handleDatasetFromLibrary, setDataset, updateDisplayApi,
       });
   };
 
+  const extension = tab?.extension;
+
   if(tableType === "library") {
     return (
       <main className="h-full w-full shadow-inner overflow-hidden overflow-x-auto">
@@ -91,6 +98,7 @@ const WorkSpace = ({tab, handleDatasetFromLibrary, setDataset, updateDisplayApi,
       </main>
     );
   }
+
   
   if(tableType === "dataset") {
     return (
@@ -101,6 +109,7 @@ const WorkSpace = ({tab, handleDatasetFromLibrary, setDataset, updateDisplayApi,
       </main>
     );
   }
+
 
   return (
     <main className="h-full w-full shadow-inner overflow-hidden overflow-x-auto">
