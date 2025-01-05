@@ -538,7 +538,6 @@ export default function Home() {
       </div>
 
       <Footer tab={tabs[currentTab]} setPage={handleSetPage} />
-
       {showApiURLInputOverlay && (
         <Overlay
           fetchTable={fetchTable}

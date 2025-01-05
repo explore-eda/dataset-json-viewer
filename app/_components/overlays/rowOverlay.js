@@ -42,14 +42,13 @@ export default function RowOverlay({
   };
 
   useEffect(() => {
-    const newHasErrors = inputValues.map((value) => value === "");
-    setHasErrors(newHasErrors);
-
     console.log(hasErrors);
     // Construct the query string
     let queryString = "";
 
-    console.log("selectedANDOR", selectedANDOR);
+    const newHasErrors = inputValues.map((value) => value === "");
+
+    console.log(newHasErrors);
 
     if (!newHasErrors.some((error) => error)) {
       for (let i = 0; i < selectedColumns.length; i++) {
@@ -60,22 +59,28 @@ export default function RowOverlay({
             .slice(0, 10);
           queryString += `"${formattedDate}"`;
         } else if (types[i] === "string") {
-          queryString += ` "${inputValues[i]}" `;
+          queryString += `"${inputValues[i]}"`;
         } else {
-          queryString += `${inputValues[i]} `;
+          queryString += `${inputValues[i]}`;
         }
         if (selectedANDOR[i + 1]) {
           queryString += ` ${selectedANDOR[i + 1]} `;
         }
       }
-
-      console.log("queryString", queryString);
-
-      setQueryString(queryString);
     }
+
+    setQueryString(queryString);
   }, [selectedColumns, selectedOperators, inputValues, types, selectedANDOR]);
 
   const handleOverlaySave = () => {
+    const newHasErrors = inputValues.map((value) => value === "");
+    setHasErrors(newHasErrors);
+
+    if (newHasErrors.some((error) => error)) {
+      errorToast("Please fill in all fields.");
+      return;
+    }
+
     const rowConfig = {
       queryString,
       selectedColumns,
@@ -136,7 +141,7 @@ export default function RowOverlay({
     setSelectedOperators([...selectedOperators, "=="]);
     setInputValues([...inputValues, ""]);
     setTypes([...types, ""]);
-    setSelectedANDOR([...selectedANDOR, "AND"]);
+    setSelectedANDOR([...selectedANDOR, "and"]);
     setHasErrors([...hasErrors, false]);
   };
 
@@ -224,101 +229,105 @@ export default function RowOverlay({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white p-16 rounded-md relative">
-        <div className="flex flex-col md:flex-row gap-5 ">
-          <button
-            className="absolute top-4 right-4 text-gray-800 hover:text-gray-900 rounded-full p-1 hover:bg-slate-200"
-            onClick={handleOverlayClose}
-          >
-            <XMarkIcon className="h-6 w-6" />
-          </button>
-          <div className="flex flex-col gap-2 justify-center">
-            <h2 className="text-xl font-bold mb-4">Row Configuration</h2>
+      <div className="fixed inset-0 flex items-center justify-center mt-10 mb-10">
+        <div className="bg-white p-16 md:mt-0 rounded-md relative overflow-y-auto max-h-full">
+          <div className="flex flex-col md:flex-row gap-5 ">
+            <button
+              className="absolute top-4 right-4 text-gray-800 hover:text-gray-900 rounded-full p-1 hover:bg-slate-200"
+              onClick={handleOverlayClose}
+            >
+              <XMarkIcon className="h-6 w-6" />
+            </button>
+            <div className="flex flex-col gap-2 justify-center">
+              <h2 className="text-xl font-bold mb-4">Row Configuration</h2>
 
-            {selectedColumns.map((column, index) => (
-              <div key={index}>
-                <div className="flex flex-row justify-between gap-2 items-center">
-                  <div className="flex flex-row gap-2 w-full">
-                    <select
-                      value={selectedColumns[index]}
-                      onChange={(event) => handleColumnChange(event, index)}
-                      className={`input-field ${
-                        hasErrors[index] ? "error" : ""
-                      }`}
-                    >
-                      <option value="">Select Column</option>
-                      {columns?.map((column) => (
-                        <option key={column.name} value={column.name}>
-                          {column.name}
-                        </option>
-                      ))}
-                    </select>
-
-                    <select
-                      value={selectedOperators[index]}
-                      onChange={(event) => handleOperatorChange(event, index)}
-                      className={`input-field ${
-                        hasErrors[index] ? "error" : ""
-                      }`}
-                    >
-                      <option value="==">{"Equals (==)"}</option>
-                      <option value="!=">{"Not Equals (!=)"}</option>
-                      <option value=">">{"Greater Than (>)"}</option>
-                      <option value="<">{"Less Than (<)"}</option>
-                      <option value=">=">
-                        {"Greater Than or Equal To (>=)"}
-                      </option>
-                      <option value="<=">{"Less Than or Equal To (<=)"}</option>
-                    </select>
-
-                    <div className="grow">{getInputComponent(index)}</div>
-
-                    {index < selectedColumns.length - 1 && (
+              {selectedColumns.map((column, index) => (
+                <div key={index}>
+                  <div className="flex flex-row sm:justify-between items-center">
+                    <div className="flex flex-col sm:flex-row gap-2 ">
                       <select
-                        value={selectedANDOR[index + 1]}
-                        onChange={(event) => handleANDORChange(event, index)}
+                        value={selectedColumns[index]}
+                        onChange={(event) => handleColumnChange(event, index)}
                         className={`input-field ${
                           hasErrors[index] ? "error" : ""
                         }`}
                       >
-                        <option value="AND">AND</option>
-                        <option value="OR">OR</option>
+                        <option value="">Select Column</option>
+                        {columns?.map((column) => (
+                          <option key={column.name} value={column.name}>
+                            {column.name}
+                          </option>
+                        ))}
                       </select>
-                    )}
+
+                      <select
+                        value={selectedOperators[index]}
+                        onChange={(event) => handleOperatorChange(event, index)}
+                        className={`input-field max-w-40 ${
+                          hasErrors[index] ? "error" : ""
+                        }`}
+                      >
+                        <option value="==">{"Equals (==)"}</option>
+                        <option value="!=">{"Not Equals (!=)"}</option>
+                        <option value=">">{"Greater Than (>)"}</option>
+                        <option value="<">{"Less Than (<)"}</option>
+                        <option value=">=">
+                          {"Greater Than or Equal To (>=)"}
+                        </option>
+                        <option value="<=">
+                          {"Less Than or Equal To (<=)"}
+                        </option>
+                      </select>
+
+                      <div className="grow">{getInputComponent(index)}</div>
+
+                      {index < selectedColumns.length - 1 && (
+                        <select
+                          value={selectedANDOR[index + 1]}
+                          onChange={(event) => handleANDORChange(event, index)}
+                          className={`input-field ${
+                            hasErrors[index] ? "error" : ""
+                          }`}
+                        >
+                          <option value="and">and</option>
+                          <option value="or">or</option>
+                        </select>
+                      )}
+                    </div>
+                    <button
+                      className="ml-1 px-2 py-1 text-xs text-black rounded-full hover:bg-gray-100"
+                      onClick={() => handleRemoveFilterSection(index)}
+                    >
+                      <XMarkIcon className="h-6 w-6" />
+                    </button>
                   </div>
+                </div>
+              ))}
+
+              <div className="flex flex-col md:flex-row gap-8 mt-4">
+                <textarea
+                  type="text"
+                  className="input-field grow h-full resize-none"
+                  placeholder="Query Generated"
+                  value={queryString}
+                  onChange={(event) => setQueryString(event.target.value)}
+                />
+
+                <div className="justify-end">
                   <button
-                    className="ml-1 px-2 py-1 text-xs text-black rounded-full hover:bg-gray-100"
-                    onClick={() => handleRemoveFilterSection(index)}
+                    onClick={handleAddFilterSection}
+                    className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded"
                   >
-                    <XMarkIcon className="h-6 w-6" />
+                    + Add Filter
+                  </button>
+
+                  <button
+                    className="bg-custom-blue hover:bg-blue-900 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    onClick={handleOverlaySave}
+                  >
+                    Request Query
                   </button>
                 </div>
-              </div>
-            ))}
-
-            <div className="flex flex-row justify-between gap-8">
-              <textarea
-                type="text"
-                className="input-field grow h-full resize-none"
-                placeholder="Query Generated"
-                value={queryString}
-                onChange={(event) => setQueryString(event.target.value)}
-              />
-
-              <div className="justify-end">
-                <button
-                  onClick={handleAddFilterSection}
-                  className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded"
-                >
-                  + Add Filter
-                </button>
-
-                <button
-                  className="bg-custom-blue hover:bg-blue-900 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                  onClick={handleOverlaySave}
-                >
-                  Request Query
-                </button>
               </div>
             </div>
           </div>
