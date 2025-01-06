@@ -5,6 +5,7 @@ import SelectInput from "./APIRequest/SelectInput";
 import QueryBuilder from "./APIRequest/QueryBuilder";
 import "animate.css";
 import { Select } from "@headlessui/react";
+import { ClipboardDocumentListIcon } from "@heroicons/react/16/solid";
 
 export default function Overlay({ handleFetchTable, setShowInputOverlay }) {
   const [url, setUrl] = useState("https://api.edacro.com");
@@ -144,14 +145,14 @@ export default function Overlay({ handleFetchTable, setShowInputOverlay }) {
   const [selectedColumns2, setSelectedColumns2] = useState([]);
   const [sortColumns, setSortColumns] = useState([]);
   const [pages, setPages] = useState(0);
-  
+
   const [queryString, setQueryString] = useState("");
 
   console.log(datasetMetadata);
 
   const handleOverlaySave = () => {
     let filters = {};
-    if(datasetMetadata) {
+    if (datasetMetadata) {
       const rowConfig = {
         queryString,
         selectedColumns,
@@ -162,51 +163,49 @@ export default function Overlay({ handleFetchTable, setShowInputOverlay }) {
         hasErrors,
       };
 
-    filters = {
-      filterQuery: queryString,
-      selectedColumns: datasetMetadata.metadata.columns.filter(column => selectedColumns2.includes(column.name)),
-      sortColumns: getSortColumnString(),
-      rowsPerPage: rowsPerPage,
-      rowConfig: rowConfig,
+      filters = {
+        filterQuery: queryString,
+        selectedColumns: datasetMetadata.metadata.columns.filter((column) =>
+          selectedColumns2.includes(column.name)
+        ),
+        sortColumns: getSortColumnString(),
+        rowsPerPage: rowsPerPage,
+        rowConfig: rowConfig,
+      };
     }
-  }
 
     handleFetchTable(url, selectedStudy, selectedDataset, filters);
     setShowInputOverlay(false);
   };
 
-  const [selectedColumns, setSelectedColumns] = useState(
-       [""]
-    ); // Array to store selected columns
-    const [selectedOperators, setSelectedOperators] = useState(
-       ["=="]
-    ); // Array to store selected operators
-    const [selectedANDOR, setSelectedANDOR] = useState(
-       [""]
-    ); // Array to store selected operators
-    const [inputValues, setInputValues] = useState(
-       [""]
-    ); // Array to store input values
-    const [types, setTypes] = useState( []); // Array to store data types
-    const [hasErrors, setHasErrors] = useState( []); // Array to store boolean flags indicating errors
-  
-  
+  const [selectedColumns, setSelectedColumns] = useState([""]); // Array to store selected columns
+  const [selectedOperators, setSelectedOperators] = useState(["=="]); // Array to store selected operators
+  const [selectedANDOR, setSelectedANDOR] = useState([""]); // Array to store selected operators
+  const [inputValues, setInputValues] = useState([""]); // Array to store input values
+  const [types, setTypes] = useState([]); // Array to store data types
+  const [hasErrors, setHasErrors] = useState([]); // Array to store boolean flags indicating errors
+
+  const handleCopyClick = () => {
+    if (newApiAddress) navigator.clipboard.writeText(newApiAddress);
+  };
 
   useEffect(() => {
     if (datasetMetadata) {
-      let newApiAddress = `${url}/studies/${selectedStudy}/datasets/${selectedDataset}?`; 
-  
+      let newApiAddress = `${url}/studies/${selectedStudy}/datasets/${selectedDataset}?`;
+
       if (queryString) {
         newApiAddress += `filter=${queryString}&`;
       }
       if (sortColumns.length > 0) {
-        const sortcols = getSortColumnString().map((s) => s).join(",");
-        newApiAddress += `sort=${sortcols}&`; 
+        const sortcols = getSortColumnString()
+          .map((s) => s)
+          .join(",");
+        newApiAddress += `sort=${sortcols}&`;
       }
       //const offset = page*limit;
       newApiAddress += `offset=${0}&limit=${rowsPerPage}`;
-  
-      setNewApiAddress(newApiAddress); 
+
+      setNewApiAddress(newApiAddress);
     }
   }, [queryString, selectedColumns2, sortColumns, rowsPerPage]);
 
@@ -227,7 +226,7 @@ export default function Overlay({ handleFetchTable, setShowInputOverlay }) {
     setInputValues([""]);
     setHasErrors([""]);
     setTypes([""]);
-  }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 ">
@@ -254,22 +253,25 @@ export default function Overlay({ handleFetchTable, setShowInputOverlay }) {
                   Sponsor Domain:
                 </label>
                 <div className="w-72 md:w-96 flex flex-row">
-                <input
-                  type="text"
-                  id="urlAddress"
-                  className="shadow appearance-none border rounded md:w-96 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  value={url}
-                  onChange={(e) => handleUrlChange(e.target.value)}
-                  onBlur={(e) => handleNewUrl(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      handleNewUrl(e.target.value);
-                    }
-                  }}
-                />
-                <button onClick={() => handleNewUrl(url)} className="bg-custom-blue hover:bg-blue-900 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ml-2">
-                  Next
-                </button>
+                  <input
+                    type="text"
+                    id="urlAddress"
+                    className="shadow appearance-none border rounded md:w-96 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    value={url}
+                    onChange={(e) => handleUrlChange(e.target.value)}
+                    onBlur={(e) => handleNewUrl(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        handleNewUrl(e.target.value);
+                      }
+                    }}
+                  />
+                  <button
+                    onClick={() => handleNewUrl(url)}
+                    className="bg-custom-blue hover:bg-blue-900 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ml-2"
+                  >
+                    Next
+                  </button>
                 </div>
               </div>
 
@@ -324,24 +326,8 @@ export default function Overlay({ handleFetchTable, setShowInputOverlay }) {
                   </select>
                 </div>
               </div>
-              <div>
-                <label
-                  htmlFor="apiAddress"
-                  className="block text-gray-700 font-bold"
-                >
-                  Generated API Request:
-                </label>
-                <div className="w-96" style={{ wordWrap: "break-word" }}>
-                  {newApiAddress}
-                </div>
-              </div>
-              <div
-                className={` ${
-                  datasetMetadata
-                    ? "mt-4 block "
-                    : "hidden"
-                }`}
-              >
+
+              <div className={` ${datasetMetadata ? "mt-4 block " : "hidden"}`}>
                 <label
                   htmlFor="apiAddress"
                   className="block text-gray-700 font-bold"
@@ -349,7 +335,6 @@ export default function Overlay({ handleFetchTable, setShowInputOverlay }) {
                   Query Construction:
                 </label>
                 <div className="w-96" style={{ wordWrap: "break-word" }}>
-  
                   <QueryBuilder
                     queryString={queryString}
                     setQueryString={setQueryString}
@@ -379,7 +364,9 @@ export default function Overlay({ handleFetchTable, setShowInputOverlay }) {
               }`}
             >
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl max-md:hidden md:block  font-bold">Dataset Configuration</h2>
+                <h2 className="text-xl max-md:hidden md:block  font-bold">
+                  Dataset Configuration
+                </h2>
               </div>
               <div className="mb-4">
                 <div className="w-72">{datasetMetadata?.metadata.label}</div>
@@ -439,7 +426,27 @@ export default function Overlay({ handleFetchTable, setShowInputOverlay }) {
               </div>
             </div>
           </div>
-          <div className="flex justify-end items-center">
+          <div className="flex flex-col md:flex-row justify-between items-center w-full mt-2 md:mt-0">
+            <div className="flex flex-col justify-between">
+                <label
+                  htmlFor="apiAddress"
+                  className="block text-gray-700 font-bold"
+                >
+                  Generated API Request:
+                </label>
+                <div className="flex flex-row items-center border border-gray-300 rounded p-2">
+
+                <div className=" max-w-96" style={{ wordWrap: "break-word" }}>
+                  {newApiAddress}
+                </div>
+                <button
+                  className="flex items-center"
+                  onClick={handleCopyClick}
+                >
+                  <ClipboardDocumentListIcon className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
             <button
               className={`bg-custom-blue hover:bg-blue-900 text-white font-bold py-2 px-4 mt-4 md:mt-2 rounded focus:outline-none focus:shadow-outline mr-2 ${
                 !selectedStudy ? "opacity-25 cursor-not-allowed" : ""

@@ -8,6 +8,18 @@ export default function RowOverlay({
   errorToast,
   handleUpdate,
 }) {
+  useEffect(() => {
+    if (!tab || tab?.type === "library") {
+      errorToast("Please Select a Valid Table");
+      setShowOverlay(false);
+    }
+  }, []);
+
+  if (tab.sourceType === "local") {
+    errorToast("Feature only available for API data sources.");
+    setShowOverlay(false);
+  }
+
   const columns = tab?.dataset.columns;
   const rows = tab?.dataset.rows;
 
@@ -189,13 +201,6 @@ export default function RowOverlay({
         );
     }
   };
-
-  useEffect(() => {
-    if (!tab || tab?.type === "library") {
-      errorToast("Please Select a Valid Table");
-      setShowOverlay(false);
-    }
-  }, []);
 
   const handleRemoveFilterSection = (index) => {
     const newSelectedColumns = [...selectedColumns];
