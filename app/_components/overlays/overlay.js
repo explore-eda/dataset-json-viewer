@@ -335,7 +335,7 @@ export default function Overlay({ fetchTable, setShowInputOverlay }) {
               <div
                 className={` ${
                   datasetMetadata
-                    ? "mt-4 block animate__animated animate__fadeInDown"
+                    ? "mt-4 block "
                     : "hidden"
                 }`}
               >
