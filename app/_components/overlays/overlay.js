@@ -6,7 +6,7 @@ import QueryBuilder from "./APIRequest/QueryBuilder";
 import "animate.css";
 import { Select } from "@headlessui/react";
 
-export default function Overlay({ fetchTable, setShowInputOverlay }) {
+export default function Overlay({ handleFetchTable, setShowInputOverlay }) {
   const [url, setUrl] = useState("");
   const [selectedStudy, setSelectedStudy] = useState("");
   const [selectedDataset, setSelectedDataset] = useState("");
@@ -171,9 +171,7 @@ export default function Overlay({ fetchTable, setShowInputOverlay }) {
     }
   }
 
-  console.log("filterrowConfigs", filters.rowConfig);
-
-    fetchTable(url, selectedStudy, selectedDataset, filters);
+    handleFetchTable(url, selectedStudy, selectedDataset, filters);
     setShowInputOverlay(false);
   };
 

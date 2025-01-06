@@ -14,7 +14,7 @@ const useFetchTable = () => {
   const { getExtension } = useGetExtension();
 
 
-  const fetchTable = (url, selectedStudy, selectedData, newFilters, addTab, setCurrentTab, setApplicationStatus, errorToast) => {
+  const fetchTable = (url, selectedStudy, selectedData, initFilters, addTab, setCurrentTab, setApplicationStatus, errorToast) => {
     if (url === "" || selectedStudy == "") return;
     if (!navigator.onLine) {
       errorToast("No internet connection. Please connect and try again.");
@@ -24,20 +24,20 @@ const useFetchTable = () => {
     let request =
       url + "/studies/" + selectedStudy + "/datasets" + "/" + selectedData;
 
-      if(newFilters.length > 0) {
+      if(initFilters.length > 0) {
         request += "?";
 
-      if (newFilters?.rowQuery) {
+      if (initFilters?.rowQuery) {
         request += `filter=${tab.rowQuery}&`;
       }
     
-      if (newFilters?.sortColumns.length > 0) {
-        const sortParams = newFilters.sortColumns.map(sort => `${sort}`).join(',');
+      if (initFilters?.sortColumns.length > 0) {
+        const sortParams = initFilters.sortColumns.map(sort => `${sort}`).join(',');
         request += `sort=${sortParams}&`; 
       }
     
-      if (newFilters?.rowsPerPage) {        
-        request += `offset=${0}&limit=${newFilters.rowsPerPage}`;
+      if (initFilters?.rowsPerPage) {        
+        request += `offset=${0}&limit=${initFilters.rowsPerPage}`;
       }
     }
 
@@ -71,7 +71,7 @@ const useFetchTable = () => {
             "dataset",
             "api",
             getExtension(selectedData),
-            newFilters,
+            initFilters,
           );
           setCurrentTab(tabUUID);
 

@@ -31,6 +31,37 @@ export default function Home() {
   const { downloadFile } = useDownloadFile();
   const { fetchTableFromLibrary } = useFetchTableFromLibrary();
 
+  // Overlays
+  const [showApiOverlay, setShowApiOverlay] = useState(false);
+  const [showPagingOverlay, setShowPagingOverlay] = useState(false);
+  const [showColumnOverlay, setShowColumnOverlay] = useState(false);
+  const [showRowOverlay, setShowRowOverlay] = useState(false);
+  const [showSortOverlay, setShowSortOverlay] = useState(false);
+
+  // Error Handling
+  const { errorMessage, setApplicationStatus } = useDataStore();
+
+  useEffect(() => {
+    if (errorMessage) {
+      errorToast(errorMessage);
+    }
+  }, [errorMessage]);
+
+  const errorToast = (message) => {
+    toast.error(message, {
+      position: "bottom-center",
+      autoClose: false,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: false,
+      progress: undefined,
+      theme: "light",
+      transition: Bounce,
+    });
+  };
+
+  // Data Handling
   const addTab = (
     tabName,
     dataset,
@@ -38,7 +69,7 @@ export default function Home() {
     dataType,
     sourceType,
     extension,
-    newFilters
+    initFilters
   ) => {
     const tabUUID = Date.now();
     setTabs((prevTabs) => ({
@@ -54,19 +85,19 @@ export default function Home() {
         sourceType: sourceType,
         extension: extension,
 
-        sortFilters: newFilters?.sortColumns ?? [],
+        sortFilters: initFilters?.sortColumns ?? [],
         useLabels: false,
-        visibleColumns: newFilters?.selectedColumns ?? dataset?.columns ?? [],
-        rowConfig: newFilters?.rowConfig ?? [],
-        rowQuery: newFilters?.filterQuery ?? "",
+        visibleColumns: initFilters?.selectedColumns ?? dataset?.columns ?? [],
+        rowConfig: initFilters?.rowConfig ?? [],
+        rowQuery: initFilters?.filterQuery ?? "",
 
         paginationActive: true,
         page: 0,
         total: dataset.pagination?.total ?? dataset.rows?.length ?? 0,
-        limit: newFilters?.rowsPerPage ?? 10,
+        limit: initFilters?.rowsPerPage ?? 10,
         totalPages: Math.ceil(
           (dataset.pagination?.total ?? dataset.rows?.length ?? 0) /
-            (newFilters?.rowsPerPage ?? 10)
+            (initFilters?.rowsPerPage ?? 10)
         ),
       },
     }));
@@ -190,36 +221,11 @@ export default function Home() {
     }));
   };
 
-  const { errorMessage, setApplicationStatus } = useDataStore();
-
-  useEffect(() => {
-    if (errorMessage) {
-      errorToast(errorMessage);
-    }
-  }, [errorMessage]);
-
-  // API Input
-  const [showApiURLInputOverlay, setShowAPIURLInputOverlay] = useState(false);
-
-  const errorToast = (message) => {
-    toast.error(message, {
-      position: "bottom-center",
-      autoClose: false,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: false,
-      draggable: false,
-      progress: undefined,
-      theme: "light",
-      transition: Bounce,
-    });
+  // Handle Functions
+  const handleFetchTable = (url, selectedStudy, selectedData, initFilters) => {
+    fetchTable(url, selectedStudy, selectedData, initFilters, addTab, setCurrentTab, setApplicationStatus, errorToast);
   };
 
-  const handleFetchTable = (url, selectedStudy, selectedData, newFilters) => {
-    fetchTable(url, selectedStudy, selectedData, newFilters, addTab, setCurrentTab, setApplicationStatus, errorToast);
-  };
-
-  // Handle File Open
   const handleFileOpen = (file) => {
     openFile(file, addTab, setCurrentTab, setApplicationStatus, errorToast);
   };
@@ -250,11 +256,6 @@ export default function Home() {
     setApplicationStatus("Cleared Workspace");
   };
 
-  const [showPagingOverlay, setShowPagingOverlay] = useState(false);
-  const [showColumnOverlay, setShowColumnOverlay] = useState(false);
-  const [showRowOverlay, setShowRowOverlay] = useState(false);
-  const [showSortOverlay, setShowSortOverlay] = useState(false);
-
   const handlePagingUpdate = (newLimit) => {
     updateLimit(currentTab, newLimit);
   };
@@ -280,7 +281,7 @@ export default function Home() {
     <div className="flex flex-col h-screen">
       <Header
         handleFileOpen={handleFileOpen}
-        handleOpenAPIOverlay={() => setShowAPIURLInputOverlay(true)}
+        handleOpenAPIOverlay={() => setShowApiOverlay(true)}
         handleDownload={handleDownload}
         clearFunction={handleClear}
         pagingFunction={() => setShowPagingOverlay(true)}
@@ -295,7 +296,7 @@ export default function Home() {
           currentTab={currentTab}
           setCurrentTab={setCurrentTab}
           removeTab={removeTab}
-          overlayFunction={() => setShowAPIURLInputOverlay(true)}
+          overlayFunction={() => setShowApiOverlay(true)}
         />
 
         <WorkSpace
@@ -309,10 +310,10 @@ export default function Home() {
       </div>
 
       <Footer tab={tabs[currentTab]} setPage={handleSetPage} />
-      {showApiURLInputOverlay && (
+      {showApiOverlay && (
         <Overlay
-          fetchTable={handleFetchTable}
-          setShowInputOverlay={setShowAPIURLInputOverlay}
+          handleFetchTable={handleFetchTable}
+          setShowInputOverlay={setShowApiOverlay}
         />
       )}
       {showPagingOverlay && (
