@@ -34,7 +34,8 @@ export default function Table({ tab }) {
     });
   }
 
-  const processedColumns = tab.visibleColumns.map((column) => ({
+  const processedColumns = tab.visibleColumns.map((column) => (
+    {
     ...column,
     name: column.name.toLowerCase(),
   }));

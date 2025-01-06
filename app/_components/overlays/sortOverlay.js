@@ -13,27 +13,15 @@ export default function SortOverlay({
 
   const [sortFilters, setSortedColumns] = useState(tab?.sortFilters || []);
 
-  const [columnsDirections, setColumnsDirections] = useState(
-    columns.reduce((acc, col) => ({ ...acc, [col]: "asc" }), {})
-  );
-
   const handleColumnSelect = (columnName) => {
-    const currentDirection = columnsDirections[columnName];
-    const newDirection = currentDirection === "asc" ? "desc" : "asc";
-    setColumnsDirections({ ...columnsDirections, [columnName]: newDirection });
-
     const existingSort = sortFilters.find((s) => s.startsWith(columnName));
 
     if (existingSort) {
-      // If it exists, update the direction
-      setSortedColumns(
-        sortFilters.map((s) =>
-          s === existingSort ? `${columnName} ${newDirection}` : s
-        )
-      );
+      // If it exists, remove it
+      setSortedColumns(sortFilters.filter((s) => !s.startsWith(columnName)));
     } else {
-      // If it doesn't exist, add a new sort filter with the new direction
-      setSortedColumns([...sortFilters, `${columnName} ${newDirection}`]);
+      // If it doesn't exist, add a new sort filter with "desc"
+      setSortedColumns([...sortFilters, `${columnName} desc`]);
     }
   };
 
@@ -86,11 +74,11 @@ export default function SortOverlay({
                       onClick={() => handleColumnSelect(column)}
                     >
                       {column}
-                      {sortFilters
-                        .find((s) => s.startsWith(column))
-                        ?.split(":")[1] === "asc"
-                        ? " ▲"
-                        : " ▼"}
+                      {sortFilters.find((s) => s.startsWith(column)) ? ( // Show "▼" when sorted
+                        " ▼"
+                      ) : (
+                        " ▲" // Show "▲" by default
+                      )}
                     </button>
                   ))}
               </div>

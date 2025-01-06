@@ -13,7 +13,6 @@ const WorkSpace = ({tab, handleDatasetFromLibrary, setDataset, updateDisplayApi,
     if(!(tab?.type === "library") && !(tab?.sourceType === "local")) {
       fetchReloadDataset();
     }
-    console.log("new tab", tab);
   }, [tab?.limit, tab?.page, tab?.sortFilters, tab?.rowQuery]);
 
   const abortControllerRef = useRef(new AbortController());

@@ -21,9 +21,6 @@ export default function TabList({
     removeTab(tabUUID);
   };
 
-  console.log("currentTab", currentTab);
-  console.log("currentTab", currentTab);
-
   return (
     <div className="flex gap-1 mb-2 ">
       {Object.keys(tabs).length > 0 &&

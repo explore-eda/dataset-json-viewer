@@ -1,38 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { XMarkIcon } from "@heroicons/react/24/solid";
-import "./overlay.css";
+import "../overlay.css";
 
-export default function RowOverlay({
-  tab,
-  setShowOverlay,
-  errorToast,
-  handleUpdate,
+export default function QueryBuilder({
+    queryString,
+    setQueryString,
+    datasetMetadata,
+    selectedColumns,
+    setSelectedColumns,
+    selectedOperators,
+    setSelectedOperators,
+    selectedANDOR,
+    setSelectedANDOR,
+    inputValues,
+    setInputValues,
+    types,
+    setTypes,
+    hasErrors,
+    setHasErrors,
 }) {
-  const columns = tab?.dataset.columns;
-  const rows = tab?.dataset.rows;
-
-  const [selectedColumns, setSelectedColumns] = useState(
-    tab?.rowConfig?.selectedColumns || [""]
-  ); // Array to store selected columns
-  const [selectedOperators, setSelectedOperators] = useState(
-    tab?.rowConfig?.selectedOperators || ["=="]
-  ); // Array to store selected operators
-  const [selectedANDOR, setSelectedANDOR] = useState(
-    tab?.rowConfig?.selectedANDOR || [""]
-  ); // Array to store selected operators
-  const [inputValues, setInputValues] = useState(
-    tab?.rowConfig?.inputValues || [""]
-  ); // Array to store input values
-  const [types, setTypes] = useState(tab?.rowConfig?.types || []); // Array to store data types
-  const [hasErrors, setHasErrors] = useState(tab?.rowConfig?.hasErrors || []); // Array to store boolean flags indicating errors
-
-  const [queryString, setQueryString] = useState(
-    tab?.rowConfig?.queryString || ""
-  );
-
-  const handleOverlayClose = () => {
-    setShowOverlay(false);
-  };
+  const columns = datasetMetadata?.metadata.columns;
 
   const handleANDORChange = (event, index) => {
     const newSelectedANDOR = [...selectedANDOR];
@@ -41,12 +28,11 @@ export default function RowOverlay({
   };
 
   useEffect(() => {
+    console.log(hasErrors);
     // Construct the query string
     let queryString = "";
 
     const newHasErrors = inputValues.map((value) => value === "");
-
-    console.log(newHasErrors);
 
     if (!newHasErrors.some((error) => error)) {
       for (let i = 0; i < selectedColumns.length; i++) {
@@ -94,8 +80,10 @@ export default function RowOverlay({
   };
 
   const handleColumnChange = (event, index) => {
+    console.log("event.target.value", event.target.value);
     const newSelectedColumns = [...selectedColumns];
     newSelectedColumns[index] = event.target.value;
+    console.log("newSelectedColumns", newSelectedColumns);
     setSelectedColumns(newSelectedColumns);
 
     console.log("event.target.value", event.target.value);
@@ -149,7 +137,7 @@ export default function RowOverlay({
             type="text"
             value={inputValues[index]}
             onChange={(event) => handleInputChange(event, index)}
-            className={`input-field ${hasErrors[index] ? "error" : ""}`}
+            className={`input-field w-full ${hasErrors[index] ? "error" : ""}`}
           />
         );
       case "integer":
@@ -158,7 +146,7 @@ export default function RowOverlay({
             type="number"
             value={inputValues[index]}
             onChange={(event) => handleInputChange(event, index)}
-            className={`input-field ${hasErrors[index] ? "error" : ""}`}
+            className={`input-field w-full ${hasErrors[index] ? "error" : ""}`}
           />
         );
       case "date":
@@ -167,7 +155,7 @@ export default function RowOverlay({
             type="date"
             value={inputValues[index]}
             onChange={(event) => handleInputChange(event, index)}
-            className={`input-field ${hasErrors[index] ? "error" : ""}`}
+            className={`input-field w-full ${hasErrors[index] ? "error" : ""}`}
           />
         );
       default:
@@ -176,7 +164,7 @@ export default function RowOverlay({
             <input
               value={inputValues[index]}
               onChange={(event) => handleInputChange(event, index)}
-              className={`input-field ${hasErrors[index] ? "error" : ""}`}
+              className={`input-field w-full ${hasErrors[index] ? "error" : ""}`}
             />
           );
         }
@@ -184,18 +172,11 @@ export default function RowOverlay({
           <input
             disabled
             value={inputValues[index]}
-            className={`input-field ${hasErrors[index] ? "error" : ""}`}
+            className={`input-field w-full ${hasErrors[index] ? "error" : ""}`}
           />
         );
     }
   };
-
-  useEffect(() => {
-    if (!tab || tab?.type === "library") {
-      errorToast("Please Select a Valid Table");
-      setShowOverlay(false);
-    }
-  }, []);
 
   const handleRemoveFilterSection = (index) => {
     const newSelectedColumns = [...selectedColumns];
@@ -222,25 +203,13 @@ export default function RowOverlay({
     newHasErrors.splice(index, 1);
     setHasErrors(newHasErrors);
   };
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="fixed inset-0 flex items-center justify-center mt-10 mb-10">
-        <div className="bg-white p-16 md:mt-0 rounded-md relative overflow-y-auto max-h-full">
-          <div className="flex flex-col md:flex-row gap-5 ">
-            <button
-              className="absolute top-4 right-4 text-gray-800 hover:text-gray-900 rounded-full p-1 hover:bg-slate-200"
-              onClick={handleOverlayClose}
-            >
-              <XMarkIcon className="h-6 w-6" />
-            </button>
-            <div className="flex flex-col gap-2 justify-center">
-              <h2 className="text-xl font-bold mb-4">Row Configuration</h2>
+    return (
+        <div className="flex flex-col gap-2 justify-center">
 
               {selectedColumns.map((column, index) => (
                 <div key={index}>
                   <div className="flex flex-row sm:justify-between items-center">
-                    <div className="flex flex-col sm:flex-row gap-2 ">
+                    <div className="flex flex-col gap-2 w-full ">
                       <select
                         value={selectedColumns[index]}
                         onChange={(event) => handleColumnChange(event, index)}
@@ -259,7 +228,7 @@ export default function RowOverlay({
                       <select
                         value={selectedOperators[index]}
                         onChange={(event) => handleOperatorChange(event, index)}
-                        className={`input-field max-w-40 ${
+                        className={`input-field ${
                           hasErrors[index] ? "error" : ""
                         }`}
                       >
@@ -275,7 +244,7 @@ export default function RowOverlay({
                         </option>
                       </select>
 
-                      <div className="grow">{getInputComponent(index)}</div>
+                      <div className="w-full">{getInputComponent(index)}</div>
 
                       {index < selectedColumns.length - 1 && (
                         <select
@@ -300,7 +269,7 @@ export default function RowOverlay({
                 </div>
               ))}
 
-              <div className="flex flex-col md:flex-row gap-8 mt-4">
+              <div className="flex flex-row gap-8 ">
                 <textarea
                   type="text"
                   className="input-field grow h-full resize-none"
@@ -317,18 +286,8 @@ export default function RowOverlay({
                     + Add Filter
                   </button>
 
-                  <button
-                    className="bg-custom-blue hover:bg-blue-900 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                    onClick={handleOverlaySave}
-                  >
-                    Request Query
-                  </button>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+    );
 }

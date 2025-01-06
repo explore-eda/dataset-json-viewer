@@ -14,10 +14,15 @@ import "./globals.css";
 import { ToastContainer, toast, Bounce } from "react-toastify";
 import { useDataStore } from "./_utils/zustand/tablestore";
 import TabList from "./_components/table/tablist";
+import useFetchTable from "./_utils/useFetchTable";
+import useParseNDJSON from "./_utils/useParseNDJSON";
 
 export default function Home() {
   const [tabs, setTabs] = useState({});
   const [currentTab, setCurrentTab] = useState("");
+
+  const { fetchTable } = useFetchTable();
+  const { parseNDJSON } = useParseNDJSON();
 
   const addTab = (
     tabName,
@@ -26,18 +31,8 @@ export default function Home() {
     dataType,
     sourceType,
     extension,
-    defaultLimit
+    newFilters
   ) => {
-    console.log(
-      "addTab",
-      tabName,
-      dataset,
-      dataSource,
-      dataType,
-      sourceType,
-      extension,
-      defaultLimit
-    );
     const tabUUID = Date.now();
     setTabs((prevTabs) => ({
       ...prevTabs,
@@ -52,19 +47,19 @@ export default function Home() {
         sourceType: sourceType,
         extension: extension,
 
-        sortFilters: [],
+        sortFilters: newFilters?.sortColumns ?? [],
         useLabels: false,
-        visibleColumns: dataset?.columns ?? [],
-        rowConfig: [],
-        rowQuery: "",
+        visibleColumns: newFilters?.selectedColumns ?? dataset?.columns ?? [],
+        rowConfig: newFilters?.rowConfig ?? [],
+        rowQuery: newFilters?.filterQuery ?? "",
 
         paginationActive: true,
         page: 0,
         total: dataset.pagination?.total ?? dataset.rows?.length ?? 0,
-        limit: defaultLimit ?? 10,
+        limit: newFilters?.rowsPerPage ?? 10,
         totalPages: Math.ceil(
           (dataset.pagination?.total ?? dataset.rows?.length ?? 0) /
-            (defaultLimit ?? 10)
+            (newFilters?.rowsPerPage ?? 10)
         ),
       },
     }));
@@ -121,7 +116,6 @@ export default function Home() {
       if (currentTab === tabName) {
         const tabKeys = Object.keys(newTabs);
         newCurrentTab = tabKeys[tabKeys.length - 1] || null;
-        console.log("newCurrentTab", newCurrentTab);
         setCurrentTab(newCurrentTab);
       }
 
@@ -140,10 +134,8 @@ export default function Home() {
   };
 
   const setPage = (tabName, page) => {
-    console.log("setPage", tabName, page);
     const posTotalPages = Math.max(tabs[tabName]?.totalPages - 1, 0);
     const newPage = Math.min(page, posTotalPages);
-    console.log("newPage", newPage);
     setTabs((prevTabs) => ({
       ...prevTabs,
       [tabName]: {
@@ -165,7 +157,6 @@ export default function Home() {
 
   const updateTotal = (tabName, newTotal) => {
     const newTotalPages = Math.ceil(newTotal / tabs[tabName].limit);
-    console.log("updateTotal", tabName, newTotal, newTotalPages);
     const posTotalPages = Math.max(newTotalPages - 1, 0);
     const newPage = Math.min(tabs[tabName].page, posTotalPages);
     setTabs((prevTabs) => ({
@@ -217,130 +208,9 @@ export default function Home() {
     });
   };
 
-  const fetchTable = (url, selectedStudy, selectedData) => {
-    if (url === "" || selectedStudy == "") return;
-    if (!navigator.onLine) {
-      errorToast("No internet connection. Please connect and try again.");
-      return false;
-    }
-
-    const request =
-      url + "/studies/" + selectedStudy + "/datasets" + "/" + selectedData;
-    setApplicationStatus(
-      `[${selectedData ?? selectedStudy}] Fetching New Table`
-    );
-
-    return fetch(request)
-      .then((response) => {
-        if (!response.ok) {
-          setApplicationStatus(
-            `[${selectedData ?? selectedStudy}] Failed to fetch new table `
-          );
-          errorToast(response.status);
-          return false;
-        }
-        const extension = getExtension(request);
-        if (extension === "ndjson") {
-          console.log("response", response);
-          return response.text().then(parseNDJSON);
-        } else {
-          return response.json();
-        }
-      })
-      .then((data) => {
-        if (selectedData) {
-          const tabUUID = addTab(
-            selectedData,
-            data,
-            request,
-            "dataset",
-            "api",
-            getExtension(selectedData)
-          );
-          setCurrentTab(tabUUID);
-
-          setApplicationStatus(
-            `[${selectedData}] Successfully fetched Dataset Table `
-          );
-          return true;
-        } else {
-          const tabUUID = addTab(
-            selectedStudy,
-            data,
-            request,
-            "library",
-            "api",
-            getExtension(selectedStudy)
-          );
-          setCurrentTab(tabUUID);
-
-          setApplicationStatus(
-            `[${selectedStudy}] Successfully fetched Library Table `
-          );
-          return true;
-        }
-      })
-      .catch((error) => {
-        setApplicationStatus("Failed to fetch table: " + request);
-        errorToast(error.message);
-        console.log("response", error.message);
-
-        return false;
-      });
+  const handleFetchTable = (url, selectedStudy, selectedData, newFilters) => {
+    fetchTable(url, selectedStudy, selectedData, newFilters, addTab, setCurrentTab, setApplicationStatus, errorToast);
   };
-
-  function parseNDJSON(data) {
-    const output = {
-      datasetJSONCreationDateTime: null,
-      datasetJSONVersion: null,
-      fileOID: null,
-      dbLastModifiedDateTime: null,
-      originator: null,
-      sourceSystem: null,
-      studyOID: null,
-      metaDataVersionOID: null,
-      metaDataRef: null,
-      itemGroupOID: null,
-      records: null,
-      name: null,
-      label: null,
-      columns: null,
-      rows: [],
-      pagination: null,
-    };
-
-    const lines = data.trim().split("\n");
-
-    if (lines.length === 0) {
-      return output; // Handle empty data
-    }
-
-    const firstLine = JSON.parse(lines[0]);
-    output.datasetJSONCreationDateTime = firstLine.datasetJSONCreationDateTime;
-    output.datasetJSONVersion = firstLine.datasetJSONVersion;
-    output.fileOID = firstLine.fileOID;
-    output.dbLastModifiedDateTime = firstLine.dbLastModifiedDateTime;
-    output.originator = firstLine.originator;
-    output.sourceSystem = firstLine.sourceSystem;
-    output.studyOID = firstLine.studyOID;
-    output.metaDataVersionOID = firstLine.metaDataVersionOID;
-    output.metaDataRef = firstLine.metaDataRef;
-    output.itemGroupOID = firstLine.itemGroupOID;
-    output.records = firstLine.records;
-    output.name = firstLine.name;
-    output.label = firstLine.label;
-    output.columns = firstLine.columns;
-
-    for (let i = 1; i < lines.length - 1; i++) {
-      const lineData = JSON.parse(lines[i]);
-      output.rows.push(Object.values(lineData)); // Extract values as an array
-    }
-
-    const lastLine = JSON.parse(lines[lines.length - 1]);
-    output.pagination = lastLine.pagination;
-
-    return output;
-  }
 
   const getExtension = (filename) => {
     return filename.split(".").pop();
@@ -411,7 +281,6 @@ export default function Home() {
       fetchDatasetFromLibrary(datasetOID)
         .then((value) => {
           if(value) {
-          console.log("value", value);
           setCurrentTab(value);}
         })
         .catch((error) => {
@@ -439,7 +308,6 @@ export default function Home() {
           }
           const extension = getExtension(request);
           if (extension === "ndjson") {
-            console.log("response", response);
             return response.text().then(parseNDJSON);
           } else {
             return response.json();
@@ -500,7 +368,6 @@ export default function Home() {
   };
 
   const handleSetPage = (page) => {
-    console.log("handleSetPage", currentTab, page);
     setPage(currentTab, page);
   };
 
@@ -540,7 +407,7 @@ export default function Home() {
       <Footer tab={tabs[currentTab]} setPage={handleSetPage} />
       {showApiURLInputOverlay && (
         <Overlay
-          fetchTable={fetchTable}
+          fetchTable={handleFetchTable}
           setShowInputOverlay={setShowAPIURLInputOverlay}
         />
       )}
