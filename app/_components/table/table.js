@@ -40,6 +40,15 @@ export default function Table({ tab }) {
     name: column.name.toLowerCase(),
   }));
 
+  const columnIndexes2 = tab.visibleColumns.map((column) => {
+    // Find the index of the current column in the visibleColumns array
+    const visibleColumnIndex = tab.dataset.columns.findIndex(
+      (visibleColumn) => visibleColumn.name.toLowerCase() === column.name.toLowerCase()
+    );
+      return visibleColumnIndex !== -1 ? visibleColumnIndex : -1;
+  });
+
+  console.log(columnIndexes2);
 
   const handleHeaderClick = (columnIndex) => {
     // Implement your header click logic here (e.g., sorting)
@@ -72,7 +81,7 @@ export default function Table({ tab }) {
           <tr key={rowIndex}>
             <td key="rowNumber">{row.rowNumber}</td>
             {processedColumns.map((col, colIndex) => (
-              <td key={colIndex}>{row[colIndex] || "N/A"}</td>
+              <td key={colIndex}>{row[columnIndexes2[colIndex]] || "N/A"}</td>
             ))}
           </tr>
         ))}
