@@ -363,7 +363,7 @@ export default function Overlay({
                   htmlFor="apiAddress"
                   className="block text-gray-700 font-bold"
                 >
-                  Query Construction:
+                  Row Query:
                 </label>
                 <div className="w-96" style={{ wordWrap: "break-word" }}>
                   <QueryBuilder
@@ -457,7 +457,7 @@ export default function Overlay({
               </div>
             </div>
           </div>
-          <div className="flex flex-col md:flex-row justify-between items-center w-full mt-2 md:mt-0 gap-4">
+          <div className="flex flex-col md:flex-row justify-between content-center items-center max-w- md:max-w-2xl mt-2 md:mt-0 gap-4 ">
             <div className="flex flex-col justify-between">
               <label
                 htmlFor="apiAddress"
@@ -466,10 +466,7 @@ export default function Overlay({
                 Generated API Request:
               </label>
               <div className="flex flex-row items-center border border-gray-300 rounded p-2">
-                <div
-                  className="max-w-72 w-full"
-                  style={{ wordWrap: "break-word" }}
-                >
+                <div className="max-w-76 md:w-full" style={{ wordWrap: "break-word" }}>
                   {newApiAddress}
                 </div>
                 <button className="flex items-center" onClick={handleCopyClick}>
@@ -484,7 +481,9 @@ export default function Overlay({
               onClick={() => handleOverlaySave(newApiAddress)}
               disabled={!selectedStudy}
             >
-              {selectedDataset ? "Request Dataset" : "Request Study Library"}
+              <span className="whitespace-nowrap">
+                {selectedDataset ? "Request Dataset" : "Request Study Library"}
+              </span>
             </button>
           </div>
         </div>

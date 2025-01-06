@@ -20,13 +20,7 @@ export default function SelectInput({
     return (
       <div>
           {datasetMetadata?.metadata.columns?.map((column) => (
-                  <div key={"select"+column.name} className="flex items-center">
-                    <label
-                      htmlFor={`select-${column.label}`}
-                      className="mr-2 cursor-pointer"
-                    >
-                      {column.name}
-                    </label>
+                  <div key={"select"+column.name} className="flex items-center gap-2">
                     <input
                       type="checkbox"
                       id={`column-${column.name}`}
@@ -34,6 +28,13 @@ export default function SelectInput({
                       onChange={() => handleColumnSelect(column.name)}
                       className="rounded border-gray-300"
                     />
+                    <label
+                      htmlFor={`select-${column.label}`}
+                      className="mr-2 cursor-pointer"
+                    >
+                      {column.name}
+                    </label>
+                    
                   </div>
                 ))}
         </div>
