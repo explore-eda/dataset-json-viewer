@@ -290,7 +290,7 @@ export default function Home() {
         sortFunction={() => setShowSortOverlay(true)}
         addressBarText={tabs[currentTab]?.displayApi}
       />
-      <div className="background h-full overflow-scroll">
+      <div className="background h-full">
         <TabList
           tabs={tabs}
           currentTab={currentTab}

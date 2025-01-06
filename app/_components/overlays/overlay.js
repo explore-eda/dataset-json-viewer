@@ -451,7 +451,7 @@ export default function Overlay({
               </div>
             </div>
           </div>
-          <div className="flex flex-col md:flex-row justify-between items-center w-full mt-2 md:mt-0">
+          <div className="flex flex-col md:flex-row justify-between items-center w-full mt-2 md:mt-0 gap-4">
             <div className="flex flex-col justify-between">
               <label
                 htmlFor="apiAddress"
