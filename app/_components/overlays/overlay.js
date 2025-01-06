@@ -7,7 +7,7 @@ import "animate.css";
 import { Select } from "@headlessui/react";
 
 export default function Overlay({ handleFetchTable, setShowInputOverlay }) {
-  const [url, setUrl] = useState("");
+  const [url, setUrl] = useState("https://api.edacro.com");
   const [selectedStudy, setSelectedStudy] = useState("");
   const [selectedDataset, setSelectedDataset] = useState("");
   const [newApiAddress, setNewApiAddress] = useState("");
@@ -253,10 +253,11 @@ export default function Overlay({ handleFetchTable, setShowInputOverlay }) {
                 >
                   Sponsor Domain:
                 </label>
+                <div className="w-72 md:w-96 flex flex-row">
                 <input
                   type="text"
                   id="urlAddress"
-                  className="shadow appearance-none border rounded w-72 md:w-96 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  className="shadow appearance-none border rounded md:w-96 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                   value={url}
                   onChange={(e) => handleUrlChange(e.target.value)}
                   onBlur={(e) => handleNewUrl(e.target.value)}
@@ -266,6 +267,10 @@ export default function Overlay({ handleFetchTable, setShowInputOverlay }) {
                     }
                   }}
                 />
+                <button onClick={() => handleNewUrl(url)} className="bg-custom-blue hover:bg-blue-900 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ml-2">
+                  Next
+                </button>
+                </div>
               </div>
 
               <div>
