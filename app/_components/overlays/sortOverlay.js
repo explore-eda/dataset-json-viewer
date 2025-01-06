@@ -75,9 +75,9 @@ export default function SortOverlay({
                     >
                       {column}
                       {sortFilters.find((s) => s.startsWith(column)) ? ( // Show "▼" when sorted
-                        " ▼"
+                        "▼"
                       ) : (
-                        " ▲" // Show "▲" by default
+                        "" // Show "▲" by default
                       )}
                     </button>
                   ))}

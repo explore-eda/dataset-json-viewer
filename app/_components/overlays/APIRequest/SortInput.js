@@ -33,7 +33,7 @@ export default function SortInput({
             {sortColumns.some((c) => c.column === column.name) ? (
               <span className="ml-1">▼</span> // Show "▼" when sorted
             ) : (
-              <span className="ml-1">▲</span> // Show "▲" by default
+              <span className="ml-1"></span> // Show "▲" by default
             )}
           </label>
         </div>
