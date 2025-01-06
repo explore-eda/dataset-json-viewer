@@ -5,7 +5,7 @@ import LibraryView from "../_components/table/libraryview";
 import { useEffect, useRef } from "react";
 import { useDataStore } from "../_utils/zustand/tablestore";
 
-const WorkSpace = ({tab, handleDatasetFromLibrary, setDataset, updateDisplayApi, updateTotal, parseNDJSON, getExtension }) => {
+const WorkSpace = ({tab, handleTableFromLibrary, setDataset, updateDisplayApi, updateTotal, parseNDJSON }) => {
   const { setErrorMessage, setApplicationStatus } = useDataStore();
   const tableType = tab?.type;
 
@@ -92,7 +92,7 @@ const WorkSpace = ({tab, handleDatasetFromLibrary, setDataset, updateDisplayApi,
     return (
       <main className="h-full w-full shadow-inner overflow-hidden overflow-x-auto">
         <div className="h-full px-5 overflow-auto overflow-x-auto">
-          <LibraryView tab={tab} handleDatasetFromLibrary={handleDatasetFromLibrary}/>
+          <LibraryView tab={tab} handleTableFromLibrary={handleTableFromLibrary}/>
         </div>
       </main>
     );

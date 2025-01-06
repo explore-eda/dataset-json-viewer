@@ -16,13 +16,20 @@ import { useDataStore } from "./_utils/zustand/tablestore";
 import TabList from "./_components/table/tablist";
 import useFetchTable from "./_utils/useFetchTable";
 import useParseNDJSON from "./_utils/useParseNDJSON";
+import useOpenFile from "./_utils/useOpenFile";
+import useDownloadFile from "./_utils/useDownloadFile";
+import useFetchTableFromLibrary from "./_utils/useFetchTableFromLibrary";
+
 
 export default function Home() {
   const [tabs, setTabs] = useState({});
   const [currentTab, setCurrentTab] = useState("");
 
   const { fetchTable } = useFetchTable();
+  const { openFile } = useOpenFile();
   const { parseNDJSON } = useParseNDJSON();
+  const { downloadFile } = useDownloadFile();
+  const { fetchTableFromLibrary } = useFetchTableFromLibrary();
 
   const addTab = (
     tabName,
@@ -212,129 +219,27 @@ export default function Home() {
     fetchTable(url, selectedStudy, selectedData, newFilters, addTab, setCurrentTab, setApplicationStatus, errorToast);
   };
 
-  const getExtension = (filename) => {
-    return filename.split(".").pop();
-  };
-
   // Handle File Open
   const handleFileOpen = (file) => {
-    setApplicationStatus("File Opening....");
-
-    const reader = new FileReader();
-
-    reader.onload = (e) => {
-      try {
-        const extention = getExtension(file.name);
-        let jsonData;
-        if(extention === "ndjson") {
-          jsonData = parseNDJSON(e.target.result);
-        }else {
-          jsonData = JSON.parse(e.target.result);
-        }
-        const tabUUID = addTab(
-          file.name,
-          jsonData,
-          file.name,
-          "dataset",
-          "local",
-          getExtension(file.name)
-        );
-        setCurrentTab(tabUUID);
-        setApplicationStatus("Opened File");
-      } catch (error) {
-        errorToast(error.message);
-      }
-    };
-
-    reader.onerror = (error) => {
-      setApplicationStatus("Error Opening File");
-      errorToast(error.message);
-    };
-
-    reader.readAsText(file);
+    openFile(file, addTab, setCurrentTab, setApplicationStatus, errorToast);
   };
 
   const handleDownload = () => {
-    if (!currentTab) {
-      errorToast("No data to download");
-      return;
-    }
-    const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
-      JSON.stringify(tabs[currentTab].dataset)
-    )}`;
-    const link = document.createElement("a");
-    link.href = jsonString;
-    if (tabs[currentTab].sourceType === "api") {
-      const urlParts = tabs[currentTab].dataSource.split("/");
-      link.download = urlParts[urlParts.length - 1];
-    } else {
-      link.download = tabs[currentTab].dataSource;
-    }
-    link.click();
+    downloadFile(tabs, currentTab, errorToast);
   };
 
-  const handleDatasetFromLibrary = (event, datasetOID) => {
+  const handleTableFromLibrary = (event, datasetOID) => {
     if (event.shiftKey) {
       event.preventDefault();
-      fetchDatasetFromLibrary(datasetOID);
+      fetchTableFromLibrary(datasetOID, tabs, currentTab, addTab, setCurrentTab, setApplicationStatus, errorToast);
     } else {
-      fetchDatasetFromLibrary(datasetOID)
+      fetchTableFromLibrary(datasetOID, tabs, currentTab, addTab, setCurrentTab, setApplicationStatus, errorToast)
         .then((value) => {
           if(value) {
           setCurrentTab(value);}
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
-        });
-    }
-  };
-
-  const fetchDatasetFromLibrary = (datasetOID) => {
-    if (tabs.hasOwnProperty(datasetOID)) {
-      return true;
-    } else {
-      if (!navigator.onLine) {
-        errorToast("No internet connection. Please connect and try again.");
-        return false;
-      }
-
-      // Make the API request
-      const request = tabs[currentTab].dataSource + `/${datasetOID}`;
-      setApplicationStatus(`[${datasetOID}]: Fetching New Dataset`);
-      return fetch(request)
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
-          }
-          const extension = getExtension(request);
-          if (extension === "ndjson") {
-            return response.text().then(parseNDJSON);
-          } else {
-            return response.json();
-          }
-        })
-        .then((data) => {
-          if (data === false) {
-            return false;
-          }
-          // This block only executes if response.ok was true
-          const tabUUID = addTab(
-            datasetOID,
-            data,
-            request,
-            "dataset",
-            "api",
-            getExtension(datasetOID)
-          );
-          setApplicationStatus(
-            `[${datasetOID}]: Successfully fetched dataset `
-          );
-          return tabUUID;
-        })
-        .catch((error) => {
-          errorToast(`[${datasetOID}]: ` + error.message);
-          setApplicationStatus(`[${datasetOID}]: ` + error.message);
-          return false;
         });
     }
   };
@@ -395,12 +300,11 @@ export default function Home() {
 
         <WorkSpace
           tab={tabs[currentTab]}
-          handleDatasetFromLibrary={handleDatasetFromLibrary}
+          handleTableFromLibrary={handleTableFromLibrary}
           setDataset={setDataset}
           updateDisplayApi={updateDisplayApi}
           updateTotal={updateTotal}
           parseNDJSON={parseNDJSON}
-          getExtension={getExtension}
         />
       </div>
 

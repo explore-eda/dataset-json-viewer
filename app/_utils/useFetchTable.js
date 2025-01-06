@@ -1,5 +1,6 @@
 import { useDataStore } from "./zustand/tablestore";
 import useParseNDJSON from "./useParseNDJSON";
+import useGetExtension from "./useGetExtension";
 
 // Separate API request handling
 const useFetchTable = () => {
@@ -8,11 +9,9 @@ const useFetchTable = () => {
     setErrorMessage,
   } = useDataStore();
 
-  const getExtension = (filename) => {
-    return filename.split(".").pop();
-  };
 
   const { parseNDJSON } = useParseNDJSON();
+  const { getExtension } = useGetExtension();
 
 
   const fetchTable = (url, selectedStudy, selectedData, newFilters, addTab, setCurrentTab, setApplicationStatus, errorToast) => {

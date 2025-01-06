@@ -1,12 +1,12 @@
 import React from "react";
 
-function LibraryView({tab, handleDatasetFromLibrary}) {
+function LibraryView({tab, handleTableFromLibrary}) {
 
   const columns = Object.keys(tab.dataset[0] || {});
   const libraryTable = tab.dataset;
 
   const handleClick = (event, row) => {
-    handleDatasetFromLibrary(event, row.datasetOID);
+    handleTableFromLibrary(event, row.datasetOID);
   };
 
   return (
