@@ -20,7 +20,6 @@ import useOpenFile from "./_utils/useOpenFile";
 import useDownloadFile from "./_utils/useDownloadFile";
 import useFetchTableFromLibrary from "./_utils/useFetchTableFromLibrary";
 
-
 export default function Home() {
   const [tabs, setTabs] = useState({});
   const [currentTab, setCurrentTab] = useState("");
@@ -39,13 +38,19 @@ export default function Home() {
   const [showSortOverlay, setShowSortOverlay] = useState(false);
 
   // Error Handling
-  const { errorMessage, setApplicationStatus } = useDataStore();
+  const { errorMessage, setApplicationStatus, copyMessage } = useDataStore();
 
   useEffect(() => {
     if (errorMessage) {
       errorToast(errorMessage);
     }
   }, [errorMessage]);
+
+  useEffect(() => {
+    if (copyMessage) {
+      copyToast(copyMessage);
+    }
+  }, [copyMessage]);
 
   const errorToast = (message) => {
     toast.error(message, {
@@ -59,6 +64,20 @@ export default function Home() {
       theme: "light",
       transition: Bounce,
     });
+  };
+
+  const copyToast = (message) => {
+    toast.success(message, {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: false,
+      progress: undefined,
+      theme: "light",
+      transition: Bounce,
+      });
   };
 
   // Data Handling
@@ -223,7 +242,16 @@ export default function Home() {
 
   // Handle Functions
   const handleFetchTable = (url, selectedStudy, selectedData, initFilters) => {
-    fetchTable(url, selectedStudy, selectedData, initFilters, addTab, setCurrentTab, setApplicationStatus, errorToast);
+    fetchTable(
+      url,
+      selectedStudy,
+      selectedData,
+      initFilters,
+      addTab,
+      setCurrentTab,
+      setApplicationStatus,
+      errorToast
+    );
   };
 
   const handleFileOpen = (file) => {
@@ -237,12 +265,29 @@ export default function Home() {
   const handleTableFromLibrary = (event, datasetOID) => {
     if (event.shiftKey) {
       event.preventDefault();
-      fetchTableFromLibrary(datasetOID, tabs, currentTab, addTab, setCurrentTab, setApplicationStatus, errorToast);
+      fetchTableFromLibrary(
+        datasetOID,
+        tabs,
+        currentTab,
+        addTab,
+        setCurrentTab,
+        setApplicationStatus,
+        errorToast
+      );
     } else {
-      fetchTableFromLibrary(datasetOID, tabs, currentTab, addTab, setCurrentTab, setApplicationStatus, errorToast)
+      fetchTableFromLibrary(
+        datasetOID,
+        tabs,
+        currentTab,
+        addTab,
+        setCurrentTab,
+        setApplicationStatus,
+        errorToast
+      )
         .then((value) => {
-          if(value) {
-          setCurrentTab(value);}
+          if (value) {
+            setCurrentTab(value);
+          }
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
@@ -289,6 +334,7 @@ export default function Home() {
         rowFunction={() => setShowRowOverlay(true)}
         sortFunction={() => setShowSortOverlay(true)}
         addressBarText={tabs[currentTab]?.displayApi}
+        copyToast={copyToast}
       />
       <div className="background h-full">
         <TabList
@@ -315,6 +361,7 @@ export default function Home() {
           handleFetchTable={handleFetchTable}
           setShowInputOverlay={setShowApiOverlay}
           errorToast={errorToast}
+          copyToast={copyToast}
         />
       )}
       {showPagingOverlay && (
@@ -358,6 +405,20 @@ export default function Home() {
         rtl={false}
         pauseOnFocusLoss={false}
         draggable={false}
+        theme="light"
+        transition={Bounce}
+      />
+
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
         theme="light"
         transition={Bounce}
       />

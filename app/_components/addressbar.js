@@ -5,6 +5,7 @@ export default function AddressBar({
   handleOpenAPIOverlay,
   handleFileOpen,
   addressBarText,
+  copyToast,
 }) {
   const [selectedOption, setSelectedOption] = useState("");
   const fileInputRef = useRef(null);
@@ -36,7 +37,10 @@ export default function AddressBar({
   };
 
   const handleCopyClick = () => {
-    if (addressBarText) navigator.clipboard.writeText(addressBarText);
+    if (addressBarText) {
+      navigator.clipboard.writeText(addressBarText);
+      copyToast("Copied to clipboard");
+    }
   };
 
   return (

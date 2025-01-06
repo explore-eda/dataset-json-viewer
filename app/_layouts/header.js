@@ -15,7 +15,7 @@ export default function Header({
   columnFunction,
   rowFunction,
   sortFunction,
-  ref,
+  copyToast,
 }) {
   return (
     <header className="flex bg-custom-beige flex-col w-full text-lg shadow-lg ">
@@ -68,6 +68,7 @@ export default function Header({
         addressBarText={addressBarText}
         handleOpenAPIOverlay={handleOpenAPIOverlay}
         handleFileOpen={handleFileOpen}
+        copyToast={copyToast}
       />
     </header>
   );

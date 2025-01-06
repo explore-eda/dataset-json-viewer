@@ -12,6 +12,7 @@ export default function Overlay({
   handleFetchTable,
   setShowInputOverlay,
   errorToast,
+  copyToast,
 }) {
   const [url, setUrl] = useState("https://api.edacro.com");
   const [selectedStudy, setSelectedStudy] = useState("");
@@ -116,15 +117,13 @@ export default function Overlay({
     clear();
     const fileExtension = getExtension(selectedDataset);
     if (fileExtension !== "ndjson" && fileExtension !== "json") {
-      if(fileExtension === ""){
+      if (fileExtension === "") {
         setValidDataset(true);
       } else {
         errorToast("Invalid file type. Please select a JSON or NDJSON File.");
         setValidDataset(false);
       }
-      setNewApiAddress(
-        url + "/studies/" + selectedStudy + "/datasets"
-      );
+      setNewApiAddress(url + "/studies/" + selectedStudy + "/datasets");
       setSelectedDataset("");
       return;
     }
@@ -211,7 +210,10 @@ export default function Overlay({
   const [hasErrors, setHasErrors] = useState([]); // Array to store boolean flags indicating errors
 
   const handleCopyClick = () => {
-    if (newApiAddress) navigator.clipboard.writeText(newApiAddress);
+    if (newApiAddress) {
+      navigator.clipboard.writeText(newApiAddress);
+      copyToast("Copied to clipboard");
+    }
   };
 
   useEffect(() => {
@@ -260,7 +262,9 @@ export default function Overlay({
           <div className="flex flex-col md:flex-row gap-5">
             <div
               className={`${
-                datasetMetadata ? "z-50 md:border-r-2 md:pr-4 bg-white" : "max-w-44"
+                datasetMetadata
+                  ? "z-50 md:border-r-2 md:pr-4 bg-white"
+                  : "max-w-44"
               }`}
             >
               <button
@@ -334,21 +338,23 @@ export default function Overlay({
                   }`}
                 >
                   <label
-  htmlFor="fileSelect"
-  className={`block text-gray-700 font-bold mb-2`}
->
-  Select Dataset:
-</label>
-<select
-  id="fileSelect"
-  className={`shadow appearance-none rounded w-72 md:w-96 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${!validDataset ? 'border border-red-500' : ''}`}
-  onChange={handleDatasetChange}
->
-  <option value="">Select a Dataset</option>
-  {dataset?.map((dataset) => (
-    <option key={dataset.name}>{dataset.name}</option>
-  ))}
-</select>
+                    htmlFor="fileSelect"
+                    className={`block text-gray-700 font-bold mb-2`}
+                  >
+                    Select Dataset:
+                  </label>
+                  <select
+                    id="fileSelect"
+                    className={`shadow appearance-none rounded w-72 md:w-96 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                      !validDataset ? "border border-red-500" : ""
+                    }`}
+                    onChange={handleDatasetChange}
+                  >
+                    <option value="">Select a Dataset</option>
+                    {dataset?.map((dataset) => (
+                      <option key={dataset.name}>{dataset.name}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
 
