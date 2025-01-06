@@ -18,6 +18,11 @@ const useFetchTableFromLibrary = () => {
             return false;
           }
     
+          const extension = getExtension(datasetOID);
+          if(extension !== "json" && extension !== "ndjson") {
+            errorToast("Unsupported file format");
+            return false;
+          }
           // Make the API request
           const request = tabs[currentTab].dataSource + `/${datasetOID}`;
           setApplicationStatus(`[${datasetOID}]: Fetching New Dataset`);

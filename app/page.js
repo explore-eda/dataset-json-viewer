@@ -314,6 +314,7 @@ export default function Home() {
         <Overlay
           handleFetchTable={handleFetchTable}
           setShowInputOverlay={setShowApiOverlay}
+          errorToast={errorToast}
         />
       )}
       {showPagingOverlay && (

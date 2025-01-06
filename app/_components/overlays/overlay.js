@@ -6,8 +6,13 @@ import QueryBuilder from "./APIRequest/QueryBuilder";
 import "animate.css";
 import { Select } from "@headlessui/react";
 import { ClipboardDocumentListIcon } from "@heroicons/react/16/solid";
+import useGetExtension from "@/app/_utils/useGetExtension";
 
-export default function Overlay({ handleFetchTable, setShowInputOverlay }) {
+export default function Overlay({
+  handleFetchTable,
+  setShowInputOverlay,
+  errorToast,
+}) {
   const [url, setUrl] = useState("https://api.edacro.com");
   const [selectedStudy, setSelectedStudy] = useState("");
   const [selectedDataset, setSelectedDataset] = useState("");
@@ -15,8 +20,11 @@ export default function Overlay({ handleFetchTable, setShowInputOverlay }) {
 
   const [studies, setStudies] = useState([]);
   const [dataset, setDataset] = useState(null);
+  const [validDataset, setValidDataset] = useState(true);
   const [datasetMetadata, setDatasetMetadata] = useState(null);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  const { getExtension } = useGetExtension();
 
   const handleRowsPerPageChange = (e) => {
     if (e.target.value <= 0 || isNaN(e.target.value)) {
@@ -103,8 +111,25 @@ export default function Overlay({ handleFetchTable, setShowInputOverlay }) {
 
   const handleDatasetChange = (e) => {
     const selectedDataset = e.target.value;
+
     setDatasetMetadata(null);
     clear();
+    const fileExtension = getExtension(selectedDataset);
+    if (fileExtension !== "ndjson" && fileExtension !== "json") {
+      if(fileExtension === ""){
+        setValidDataset(true);
+      } else {
+        errorToast("Invalid file type. Please select a JSON or NDJSON File.");
+        setValidDataset(false);
+      }
+      setNewApiAddress(
+        url + "/studies/" + selectedStudy + "/datasets"
+      );
+      setSelectedDataset("");
+      return;
+    }
+
+    setValidDataset(true);
     setSelectedDataset(selectedDataset);
     setNewApiAddress(
       url + "/studies/" + selectedStudy + "/datasets/" + selectedDataset
@@ -235,7 +260,7 @@ export default function Overlay({ handleFetchTable, setShowInputOverlay }) {
           <div className="flex flex-col md:flex-row gap-5">
             <div
               className={`${
-                datasetMetadata ? "z-50 md:border-r-2 md:pr-4 bg-white" : ""
+                datasetMetadata ? "z-50 md:border-r-2 md:pr-4 bg-white" : "max-w-44"
               }`}
             >
               <button
@@ -309,21 +334,21 @@ export default function Overlay({ handleFetchTable, setShowInputOverlay }) {
                   }`}
                 >
                   <label
-                    htmlFor="fileSelect"
-                    className="block text-gray-700 font-bold mb-2"
-                  >
-                    Select Dataset:
-                  </label>
-                  <select
-                    id="fileSelect"
-                    className="shadow appearance-none border rounded w-72 md:w-96 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    onChange={handleDatasetChange}
-                  >
-                    <option value="">Select a Dataset</option>
-                    {dataset?.map((dataset) => (
-                      <option key={dataset.name}>{dataset.name}</option>
-                    ))}
-                  </select>
+  htmlFor="fileSelect"
+  className={`block text-gray-700 font-bold mb-2`}
+>
+  Select Dataset:
+</label>
+<select
+  id="fileSelect"
+  className={`shadow appearance-none rounded w-72 md:w-96 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${!validDataset ? 'border border-red-500' : ''}`}
+  onChange={handleDatasetChange}
+>
+  <option value="">Select a Dataset</option>
+  {dataset?.map((dataset) => (
+    <option key={dataset.name}>{dataset.name}</option>
+  ))}
+</select>
                 </div>
               </div>
 
@@ -428,21 +453,20 @@ export default function Overlay({ handleFetchTable, setShowInputOverlay }) {
           </div>
           <div className="flex flex-col md:flex-row justify-between items-center w-full mt-2 md:mt-0">
             <div className="flex flex-col justify-between">
-                <label
-                  htmlFor="apiAddress"
-                  className="block text-gray-700 font-bold"
+              <label
+                htmlFor="apiAddress"
+                className="block text-gray-700 font-bold"
+              >
+                Generated API Request:
+              </label>
+              <div className="flex flex-row items-center border border-gray-300 rounded p-2">
+                <div
+                  className="max-w-72 w-full"
+                  style={{ wordWrap: "break-word" }}
                 >
-                  Generated API Request:
-                </label>
-                <div className="flex flex-row items-center border border-gray-300 rounded p-2">
-
-                <div className=" max-w-96" style={{ wordWrap: "break-word" }}>
                   {newApiAddress}
                 </div>
-                <button
-                  className="flex items-center"
-                  onClick={handleCopyClick}
-                >
+                <button className="flex items-center" onClick={handleCopyClick}>
                   <ClipboardDocumentListIcon className="h-5 w-5" />
                 </button>
               </div>
