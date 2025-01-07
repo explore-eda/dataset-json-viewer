@@ -189,7 +189,7 @@ export function Help({handleAboutUs}) {
           <button
             onClick={() =>
               (window.location.href =
-                "mailto:link?subject=Feedback re:EDA Dataset-JSON Viewer")
+                "mailto:support@edaclinical.com?subject=Feedback re:EDA Dataset-JSON Viewer")
             }
             className="group flex w-40 items-center gap-2 py-1.5 px-3 data-[focus]:bg-black/10"
           >
