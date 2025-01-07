@@ -11,7 +11,10 @@ import {
   Bars3Icon,
   BarsArrowUpIcon,
   BookOpenIcon,
-  ArrowsUpDownIcon
+  ArrowsUpDownIcon,
+  EnvelopeIcon,
+  DocumentIcon,
+  UserGroupIcon,
 } from "@heroicons/react/16/solid";
 
 export function FileMenu({
@@ -116,8 +119,8 @@ export function Tools({
   pagingFunction,
   columnFunction,
   rowFunction,
-  sortFunction}
-) {
+  sortFunction,
+}) {
   return (
     <Menu>
       <MenuButton className="inline-flex items-center gap-2 rounded-md py-1.5 px-3 focus:outline-none data-[hover]:bg-gray-100 data-[open]:bg-gray-100 data-[focus]:outline-1 data-[focus]:outline-gray-100">
@@ -170,7 +173,7 @@ export function Tools({
   );
 }
 
-export function Help() {
+export function Help({handleAboutUs}) {
   return (
     <Menu>
       <MenuButton className="inline-flex items-center gap-2 rounded-md py-1.5 px-3 focus:outline-none data-[hover]:bg-gray-100 data-[open]:bg-gray-100 data-[focus]:outline-1 data-[focus]:outline-gray-100">
@@ -184,29 +187,32 @@ export function Help() {
       >
         <MenuItem>
           <button
-            onClick={() => window.open("", "_blank")}
-            className="group flex w-32 items-center gap-2 py-1.5 px-3 data-[focus]:bg-black/10"
+            onClick={() =>
+              (window.location.href =
+                "mailto:link?subject=Feedback re:EDA Dataset-JSON Viewer")
+            }
+            className="group flex w-40 items-center gap-2 py-1.5 px-3 data-[focus]:bg-black/10"
           >
-            <PencilIcon className="size-4 fill-black/30" />
-            Github
+            <EnvelopeIcon className="size-4 fill-black/30" />
+            Send Feedback
           </button>
         </MenuItem>
         <MenuItem>
           <button
             onClick={() => window.open("", "_blank")}
-            className="group flex w-32 items-center gap-2 py-1.5 px-3 data-[focus]:bg-black/10"
+            className="group flex w-40 items-center gap-2 py-1.5 px-3 data-[focus]:bg-black/10"
           >
-            <PencilIcon className="size-4 fill-black/30" />
-            Contact
+            <DocumentIcon className="size-4 fill-black/30" />
+            View ReadMe.md
           </button>
         </MenuItem>
         <MenuItem>
           <button
-            onClick={() => window.open("", "_blank")}
-            className="group flex w-32 items-center gap-2 py-1.5 px-3 data-[focus]:bg-black/10"
+            className="group flex w-40 items-center gap-2 py-1.5 px-3 data-[focus]:bg-black/10"
+            onClick={handleAboutUs}
           >
-            <PencilIcon className="size-4 fill-black/30" />
-            Book Meeting
+            <UserGroupIcon className="size-4 fill-black/30" />
+            About Us
           </button>
         </MenuItem>
       </MenuItems>

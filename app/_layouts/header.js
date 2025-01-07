@@ -16,6 +16,7 @@ export default function Header({
   rowFunction,
   sortFunction,
   copyToast,
+  handleAboutUs,
 }) {
   return (
     <header className="flex bg-custom-beige flex-col w-full text-lg shadow-lg ">
@@ -48,7 +49,9 @@ export default function Header({
             rowFunction={rowFunction}
             sortFunction={sortFunction}
           />
-          <Help />
+          <Help 
+          handleAboutUs={handleAboutUs}
+          />
         </div>
 
         <div className="self-center flex max-md:hidden md:block font-bold ml-2 md:mx-8">

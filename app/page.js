@@ -19,6 +19,7 @@ import useParseNDJSON from "./_utils/useParseNDJSON";
 import useOpenFile from "./_utils/useOpenFile";
 import useDownloadFile from "./_utils/useDownloadFile";
 import useFetchTableFromLibrary from "./_utils/useFetchTableFromLibrary";
+import AboutUsOverlay from "./_components/overlays/aboutUsOverlay";
 
 export default function Home() {
   const [tabs, setTabs] = useState({});
@@ -36,6 +37,7 @@ export default function Home() {
   const [showColumnOverlay, setShowColumnOverlay] = useState(false);
   const [showRowOverlay, setShowRowOverlay] = useState(false);
   const [showSortOverlay, setShowSortOverlay] = useState(false);
+  const [showAboutUs, setShowAboutUs] = useState(false);
 
   // Error Handling
   const { errorMessage, setApplicationStatus, copyMessage } = useDataStore();
@@ -335,6 +337,7 @@ export default function Home() {
         sortFunction={() => setShowSortOverlay(true)}
         addressBarText={tabs[currentTab]?.displayApi}
         copyToast={copyToast}
+        handleAboutUs={() => setShowAboutUs(true)}
       />
       <div className="background h-full">
         <TabList
@@ -396,6 +399,13 @@ export default function Home() {
           handleUpdate={handleSortUpdate}
         />
       )}
+      {showAboutUs && (
+        <AboutUsOverlay
+          setShowOverlay={setShowAboutUs}
+          errorToast={errorToast}
+      />
+      )}
+
       <ToastContainer
         stacked
         position="bottom-center"
