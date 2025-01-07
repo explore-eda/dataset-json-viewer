@@ -199,7 +199,7 @@ export function Help({handleAboutUs}) {
         </MenuItem>
         <MenuItem>
           <button
-            onClick={() => window.open("", "_blank")}
+            onClick={() => window.open("https://github.com/explore-eda/dataset-json-viewer/blob/main/README.md", "_blank")}
             className="group flex w-40 items-center gap-2 py-1.5 px-3 data-[focus]:bg-black/10"
           >
             <DocumentIcon className="size-4 fill-black/30" />
