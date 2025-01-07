@@ -1,5 +1,9 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
+Web Application (no log-in required): https://viewer.edacro.com
+User Guide (feel free to comment): https://hackmd.io/@explore/EDA_DJV_UG
+
+
 ## Getting Started
 
 First, run the development server:
