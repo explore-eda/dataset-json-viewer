@@ -1,8 +1,13 @@
-// next.config.mjs
 import withPWA from 'next-pwa';
 
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+  experimental: {
+    turbo: {
+      enabled: true,  // Ensure Turbopack is enabled properly
+    },
+  },
+};
 
 const config = withPWA({
   dest: 'public',
