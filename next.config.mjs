@@ -1,5 +1,6 @@
 import withPWA from 'next-pwa';
 
+/** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
     turbo: {
